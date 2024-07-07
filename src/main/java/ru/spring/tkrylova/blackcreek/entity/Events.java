@@ -51,7 +51,7 @@ public class Events {
     @JoinColumn(name = "event_type_id")
     private Integer event_type_id;
 
-    @ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Integer responsibleUserId;
 

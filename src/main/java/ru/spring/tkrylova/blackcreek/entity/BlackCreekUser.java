@@ -5,10 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -19,8 +16,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Table(name = "users")
-public class Users {
+public class BlackCreekUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -43,7 +41,7 @@ public class Users {
     @Column(name = "login",
             nullable = false,
             unique = true)
-    private boolean login;
+    private String login;
 
     @NotNull
     @Size(min = 2)
@@ -62,7 +60,11 @@ public class Users {
     @Column(name = "password",
             nullable = false,
             unique = true)
-    private boolean password;
+    private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private UserRole userRole;
 
     @Column(name = "user_token",
             insertable = false)

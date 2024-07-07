@@ -27,7 +27,7 @@ public class Bookings {
     @JoinColumn(name = "event_id")
     private Integer event_id;
 
-    @ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Integer user_id;
 
