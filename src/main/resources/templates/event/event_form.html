@@ -2,24 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Event</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Add Event</h1>
-<form th:action="@{/event/events}" th:object="${event}" method="post">
-    <div>
-        <label>Name</label>
-        <input type="text" th:field="*{name}" />
-    </div>
-    <div>
-        <label>Description</label>
-        <input type="text" th:field="*{description}" />
-    </div>
-    <div>
-        <label>Date</label>
-        <input type="date" th:field="*{date}" />
-    </div>
-    <button type="submit">Save</button>
-</form>
-<a th:href="@{/event/events}">Back to Events</a>
+<div class="container">
+    <h1 class="my-4">Add Event</h1>
+    <form th:action="@{/event/events}" th:object="${event}" method="post" class="form">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" th:field="*{name}" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" th:field="*{description}" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" th:field="*{date}" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <a th:href="@{/event/events}" class="btn btn-secondary mt-3">Back to Events</a>
+</div>
 </body>
 </html>

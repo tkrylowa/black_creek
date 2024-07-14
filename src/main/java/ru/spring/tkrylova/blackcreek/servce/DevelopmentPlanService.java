@@ -1,10 +1,12 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
+import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.DevelopmentPlan;
 import ru.spring.tkrylova.blackcreek.repository.DevelopmentPlanRepository;
 
 import java.util.List;
 
+@Service
 public class DevelopmentPlanService {
     private final DevelopmentPlanRepository developmentPlanRepository;
 

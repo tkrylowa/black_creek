@@ -1,5 +1,6 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
+import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.DevelopmentPlan;
 import ru.spring.tkrylova.blackcreek.entity.Place;
 import ru.spring.tkrylova.blackcreek.repository.DevelopmentPlanRepository;
@@ -7,6 +8,7 @@ import ru.spring.tkrylova.blackcreek.repository.PlacesRepository;
 
 import java.util.List;
 
+@Service
 public class PlaceService {
     private final PlacesRepository placesRepository;
 

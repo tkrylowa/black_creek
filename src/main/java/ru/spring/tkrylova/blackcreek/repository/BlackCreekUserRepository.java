@@ -5,7 +5,8 @@ import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 
 import java.util.Optional;
 
-public interface BlackCreekRepository extends JpaRepository<BlackCreekUser, Long> {
+public interface BlackCreekUserRepository extends JpaRepository<BlackCreekUser, Long> {
     Optional<BlackCreekUser> findByLogin(String login);
     boolean existsByLogin(String login);
+    Optional<BlackCreekUser> findByUsername(String username);
 }

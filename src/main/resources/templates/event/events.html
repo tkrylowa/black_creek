@@ -2,16 +2,32 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Events</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Events</h1>
-<ul>
-    <li th:each="event : ${events}">
-        <span th:text="${event.name}">Event Name</span> -
-        <span th:text="${event.description}">Description</span> -
-        <span th:text="${event.date}">Date</span>
-    </li>
-</ul>
-<a th:href="@{/event/events/new}">Add Event</a>
+<div class="container">
+    <h1 class="my-4">Events</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td th:text="${event.name}">Event Name</td>
+            <td th:text="${event.description}">Description</td>
+            <td th:text="${event.date}">Date</td>
+            <td>
+                <a th:href="@{/event/events/register/{id}(id=${event.id})}" class="btn btn-primary">Register</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/event/events/new}" class="btn btn-success">Add Event</a>
+</div>
 </body>
 </html>
