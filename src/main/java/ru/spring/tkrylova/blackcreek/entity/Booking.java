@@ -16,27 +16,41 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "aims")
-public class Aims {
+@Table(name = "bookings")
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "aim_id")
-    private int aimId;
+    @Column(name = "booking_id")
+    private int bookingId;
+
+    @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    private Integer event_id;
+
+    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Integer user_id;
+
+    @CreatedDate
+    @Column(name = "booking_date",
+            updatable = false)
+    private LocalDateTime bookingDate;
 
     @NotNull
-    @Size(min = 5, max = 25)
-    @Column(name = "aim_name",
-            nullable = false)
-    private String aimName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "time_slot", nullable = false)
+    private TimeSlot timeSlot;
 
-    @Size(min = 10)
-    @Column(name = "aim_description")
-    private String aimDescription;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private BookingStatus status;
 
     @CreatedDate
     @Column(name = "created_at",
             updatable = false)
     private LocalDateTime createdAt;
+
 
     @Column(name = "created_by",
             updatable = false,
@@ -50,9 +64,4 @@ public class Aims {
 
     @Column(name = "updated_by")
     private String updatedBy;
-
-    @Column(name = "is_active",
-            columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE",
-            insertable = false)
-    private boolean isActive;
 }

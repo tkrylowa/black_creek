@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Development Plan</title>
+</head>
+<body>
+<h1>Add Development Plan</h1>
+<form th:action="@{/development_plans/development_plans}" th:object="${developmentPlan}" method="post">
+    <div>
+        <label>Name</label>
+        <input type="text" th:field="*{name}" />
+    </div>
+    <div>
+        <label>Description</label>
+        <input type="text" th:field="*{description}" />
+    </div>
+    <button type="submit">Save</button>
+</form>
+<a th:href="@{/development_plans/development_plans}">Back to Development Plans</a>
+</body>
+</html>

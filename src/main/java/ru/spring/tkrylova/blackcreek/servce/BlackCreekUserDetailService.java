@@ -6,11 +6,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekRepository;
 
 import java.util.Set;
 
+@Service
 public class BlackCreekUserDetailService implements UserDetailsService {
     final private BlackCreekRepository blackCreekRepository;
 

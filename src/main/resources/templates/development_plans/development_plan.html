@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<head>
+    <title>Development Plans</title>
+</head>
+<body>
+<h1>Development Plans</h1>
+<ul>
+    <li th:each="plan : ${developmentPlans}">
+        <span th:text="${plan.name}">Plan Name</span> -
+        <span th:text="${plan.description}">Description</span>
+    </li>
+</ul>
+<a th:href="@{/development_plans/development_plans/new}">Add Development Plan</a>
+</body>
+</html>

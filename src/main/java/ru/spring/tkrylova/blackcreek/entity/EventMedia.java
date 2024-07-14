@@ -26,7 +26,7 @@ public class EventMedia {
             nullable = false)
     private String eventMediaPath;
 
-    @ManyToOne(targetEntity = Events.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Integer event_id;
 }

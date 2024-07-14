@@ -1,8 +1,7 @@
 package ru.spring.tkrylova.blackcreek.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,22 +16,22 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "places")
-public class Places {
+@Table(name = "development_plan")
+public class DevelopmentPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "place_id")
-    private int placeId;
+    @Column(name = "development_plan_id")
+    private int developmentPlanId;
 
     @NotNull
-    @Size(min = 5, max = 100)
-    @Column(name = "place_name",
+    @Size(min = 5, max = 25)
+    @Column(name = "aim_name",
             nullable = false)
-    private String placeName;
+    private String aimName;
 
     @Size(min = 10)
-    @Column(name = "location")
-    private String location;
+    @Column(name = "aim_description")
+    private String aimDescription;
 
     @CreatedDate
     @Column(name = "created_at",

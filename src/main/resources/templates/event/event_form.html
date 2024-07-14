@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Event</title>
+</head>
+<body>
+<h1>Add Event</h1>
+<form th:action="@{/event/events}" th:object="${event}" method="post">
+    <div>
+        <label>Name</label>
+        <input type="text" th:field="*{name}" />
+    </div>
+    <div>
+        <label>Description</label>
+        <input type="text" th:field="*{description}" />
+    </div>
+    <div>
+        <label>Date</label>
+        <input type="date" th:field="*{date}" />
+    </div>
+    <button type="submit">Save</button>
+</form>
+<a th:href="@{/event/events}">Back to Events</a>
+</body>
+</html>

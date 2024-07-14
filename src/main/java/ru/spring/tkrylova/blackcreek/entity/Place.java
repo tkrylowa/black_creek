@@ -1,7 +1,8 @@
 package ru.spring.tkrylova.blackcreek.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,41 +17,27 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "bookings")
-public class Bookings {
+@Table(name = "places")
+public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booking_id")
-    private int bookingId;
-
-    @ManyToOne(targetEntity = Events.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
-    private Integer event_id;
-
-    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private Integer user_id;
-
-    @CreatedDate
-    @Column(name = "booking_date",
-            updatable = false)
-    private LocalDateTime bookingDate;
+    @Column(name = "place_id")
+    private int placeId;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "time_slot", nullable = false)
-    private TimeSlot timeSlot;
+    @Size(min = 5, max = 100)
+    @Column(name = "place_name",
+            nullable = false)
+    private String placeName;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private BookingStatus status;
+    @Size(min = 10)
+    @Column(name = "location")
+    private String location;
 
     @CreatedDate
     @Column(name = "created_at",
             updatable = false)
     private LocalDateTime createdAt;
-
 
     @Column(name = "created_by",
             updatable = false,
@@ -64,4 +51,9 @@ public class Bookings {
 
     @Column(name = "updated_by")
     private String updatedBy;
+
+    @Column(name = "is_active",
+            columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE",
+            insertable = false)
+    private boolean isActive;
 }
