@@ -45,6 +45,7 @@ public class BlackCreekEvent {
     @Size(min = 2)
     @Column(name = "event_capacity",
             nullable = false)
+//    how many people can be attended on event
     private Integer eventCapacity;
 
     @ManyToOne(targetEntity = EventTypes.class, fetch = FetchType.LAZY)
@@ -62,6 +63,7 @@ public class BlackCreekEvent {
 
     @PositiveOrZero
     @Column(name = "cost")
+//    cost of attend
     private Double cost;
 
     @CreatedDate

@@ -1,9 +1,7 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
 import org.springframework.stereotype.Service;
-import ru.spring.tkrylova.blackcreek.entity.DevelopmentPlan;
 import ru.spring.tkrylova.blackcreek.entity.Place;
-import ru.spring.tkrylova.blackcreek.repository.DevelopmentPlanRepository;
 import ru.spring.tkrylova.blackcreek.repository.PlacesRepository;
 
 import java.util.List;
@@ -20,7 +18,7 @@ public class PlaceService {
         return placesRepository.findAll();
     }
 
-    public Place savePlan(Place plan) {
-        return placesRepository.save(plan);
+    public void savePlan(Place plan) {
+        placesRepository.save(plan);
     }
 }

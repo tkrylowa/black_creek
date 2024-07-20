@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface BlackCreekUserRepository extends JpaRepository<BlackCreekUser, Long> {
     Optional<BlackCreekUser> findByLogin(String login);
     boolean existsByLogin(String login);
-    Optional<BlackCreekUser> findByUsername(String username);
 }

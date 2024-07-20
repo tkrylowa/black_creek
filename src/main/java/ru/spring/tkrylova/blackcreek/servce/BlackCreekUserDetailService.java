@@ -28,7 +28,7 @@ public class BlackCreekUserDetailService implements UserDetailsService {
         return new User(login, blackCreekUser.getPassword(), Set.of(authority));
     }
 
-    public Optional<BlackCreekUser> getUserByUsername(String username) {
-        return blackCreekUserRepository.findByUsername(username);
+    public Optional<BlackCreekUser> getUserByLogin(String login) {
+        return blackCreekUserRepository.findByLogin(login);
     }
 }

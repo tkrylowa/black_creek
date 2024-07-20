@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.Comment;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekUserDetailService;
@@ -30,7 +29,7 @@ public class CommentController {
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setEvent(blackCreekEventService.getEventById(eventId));
-//        comment.setUser(blackCreekUserDetailService.getUserByUsername(principal.getName()));
+        comment.setUser(blackCreekUserDetailService.getUserByLogin(principal.getName()).orElseThrow());
         commentService.saveComment(comment);
         return "redirect:/events/" + eventId;
     }

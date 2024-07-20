@@ -33,7 +33,7 @@ public class DevelopmentPlanController {
         return "development_plans/development_plan_form";
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public String createDevelopmentPlan(@ModelAttribute DevelopmentPlan developmentPlan) {
         developmentPlanService.savePlan(developmentPlan);
         return "redirect:/development_plans/development_plans";

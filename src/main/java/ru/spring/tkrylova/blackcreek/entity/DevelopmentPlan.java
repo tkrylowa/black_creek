@@ -25,12 +25,12 @@ public class DevelopmentPlan {
 
     @NotNull
     @Size(min = 5, max = 25)
-    @Column(name = "aim_name",
+    @Column(name = "development_plan_name",
             nullable = false)
     private String aimName;
 
     @Size(min = 10)
-    @Column(name = "aim_description")
+    @Column(name = "development_plan_description")
     private String aimDescription;
 
     @CreatedDate

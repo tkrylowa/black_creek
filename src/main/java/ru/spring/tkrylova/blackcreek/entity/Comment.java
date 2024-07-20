@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -17,11 +18,20 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
     private Long id;
-    @ManyToOne
+
+    @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     private BlackCreekEvent event;
-    @ManyToOne
+
+    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
     private BlackCreekUser user;
+
+    @Column(name = "content")
     private String content;
-    private LocalDateTime timestamp;
+
+    @CreatedDate
+    @Column(name = "created_at",
+            updatable = false)
+    private LocalDateTime createdAt;
 }

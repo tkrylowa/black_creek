@@ -22,7 +22,7 @@ public class BlackCreekEventService {
         return blackCreekEventRepository.findById(id).orElse(null);
     }
 
-    public BlackCreekEvent saveEvent(BlackCreekEvent event) {
-        return blackCreekEventRepository.save(event);
+    public void saveEvent(BlackCreekEvent event) {
+        blackCreekEventRepository.save(event);
     }
 }

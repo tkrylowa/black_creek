@@ -43,7 +43,7 @@ public class BlackCreekEventController {
         return "event/event_form";
     }
 
-    @PostMapping("/events")
+    @PostMapping("/add")
     public String createEvent(@ModelAttribute BlackCreekEvent event) {
         blackCreekEventService.saveEvent(event);
         return "redirect:/event/events";

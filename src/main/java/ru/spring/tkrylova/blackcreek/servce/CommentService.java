@@ -18,7 +18,7 @@ public class CommentService {
         return commentRepository.findByEventId(eventId);
     }
 
-    public Comment saveComment(Comment comment) {
-        return commentRepository.save(comment);
+    public void saveComment(Comment comment) {
+        commentRepository.save(comment);
     }
 }
