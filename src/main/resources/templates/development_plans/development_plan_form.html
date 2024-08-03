@@ -2,20 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Development Plan</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
 <body>
-<h1>Add Development Plan</h1>
-<form th:action="@{/development_plans/development_plans}" th:object="${developmentPlan}" method="post">
-    <div>
-        <label>Name</label>
-        <input type="text" th:field="*{name}" />
-    </div>
-    <div>
-        <label>Description</label>
-        <input type="text" th:field="*{description}" />
-    </div>
-    <button type="submit">Save</button>
-</form>
-<a th:href="@{/development_plans/development_plans}">Back to Development Plans</a>
+<div th:replace="fragments :: header"></div>
+<div class="container">
+    <h1 class="my-4">Add Development Plan</h1>
+    <form th:action="@{/development_plans/development_plans}" th:object="${event}" method="${developmentPlan}" class="form">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" th:field="*{name}" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" th:field="*{description}" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <a th:href="@{/development_plans/development_plans}" class="btn btn-secondary mt-3">Back to Development Plans</a>
+</div>
 </body>
 </html>

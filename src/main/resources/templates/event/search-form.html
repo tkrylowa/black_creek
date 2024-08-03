@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Event Search</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+<div th:replace="fragments :: header"></div>
+<form th:action="@{/event/events/search}" method="get">
+    <input type="text" name="keyword" placeholder="Search for events" required>
+    <button type="submit">Search</button>
+</form>
+</body>
+</html>

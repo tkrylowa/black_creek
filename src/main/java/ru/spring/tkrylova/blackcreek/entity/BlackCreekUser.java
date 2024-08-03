@@ -1,15 +1,14 @@
 package ru.spring.tkrylova.blackcreek.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -22,11 +21,11 @@ public class BlackCreekUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
 
     @ManyToOne(targetEntity = UserTypes.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
-    private Integer typeId;
+    private Long typeId;
 
     @NotNull
     @Email
@@ -35,7 +34,7 @@ public class BlackCreekUser {
             unique = true)
     private String email;
 
-    @NotNull
+    @NotBlank(message = "Login is required")
     @Pattern(regexp = "^[a-zA-Z0-9]{6,12}$",
             message = "login must be of 6 to 12 length with no special characters")
     @Column(name = "login",
@@ -78,6 +77,9 @@ public class BlackCreekUser {
             insertable = false,
             columnDefinition = "BOOLEAN DEFAULT false")
     private boolean loggedIn;
+
+    @ManyToMany(mappedBy = "attendees")
+    private Set<BlackCreekEvent> attendedEvents = new HashSet<>();
 
     @CreatedDate
     @Column(name = "created_at",

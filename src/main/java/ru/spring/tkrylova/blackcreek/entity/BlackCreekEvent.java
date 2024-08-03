@@ -7,6 +7,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -19,7 +21,7 @@ public class BlackCreekEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
-    private int eventId;
+    private Long eventId;
 
     @NotNull
     @Size(min = 5, max = 25)
@@ -44,25 +46,46 @@ public class BlackCreekEvent {
     @Column(name = "event_capacity",
             nullable = false)
 //    how many people can be attended on event
-    private Integer eventCapacity;
+    private Long eventCapacity;
 
     @ManyToOne(targetEntity = EventTypes.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id")
-    private Integer event_type_id;
+    private Long eventTypeId;
 
     @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Integer responsibleUserId;
+    private Long responsibleUserId;
 
     @Column(name = "is_free",
             insertable = false,
             columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isFree;
 
+    @Column(name = "is_cancelled",
+            insertable = false,
+            columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isCancelled;
+
     @PositiveOrZero
     @Column(name = "cost")
 //    cost of attend
     private Double cost;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_users",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<BlackCreekUser> users = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_attendance",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<BlackCreekUser> attendees = new HashSet<>();
 
     @CreatedDate
     @Column(name = "created_at",

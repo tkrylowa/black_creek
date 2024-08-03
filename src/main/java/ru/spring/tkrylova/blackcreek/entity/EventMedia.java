@@ -16,7 +16,7 @@ public class EventMedia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_media_id")
-    private int eventMediaId;
+    private Long eventMediaId;
 
     @NotNull
     @Size(min = 5, max = 25)
@@ -26,5 +26,5 @@ public class EventMedia {
 
     @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    private Integer event_id;
+    private Long event_id;
 }

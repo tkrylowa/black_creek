@@ -11,8 +11,10 @@ import lombok.Setter;
 public class UserRole {
     @Id
     @GeneratedValue
-    private int id;
+    @Column(name = "role_id")
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role_type")
     private RoleType roleType;
 }

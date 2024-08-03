@@ -17,7 +17,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    private Long id;
+    private Long commentId;
 
     @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     private BlackCreekEvent event;

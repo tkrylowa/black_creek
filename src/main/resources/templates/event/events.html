@@ -3,8 +3,10 @@
 <head>
     <title>Events</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
 <body>
+<div th:replace="fragments :: header"></div>
 <div class="container">
     <h1 class="my-4">Events</h1>
     <table class="table table-striped">
@@ -28,6 +30,24 @@
         </tbody>
     </table>
     <a th:href="@{/event/events/new}" class="btn btn-success">Add Event</a>
+    <h2>Attendees</h2>
+    <ul>
+        <li th:each="attendee : ${event.attendees}" th:text="${attendee.login}"></li>
+    </ul>
+    <h2>Mark Attendance</h2>
+    <form th:action="@{/events/events/{eventId}/attend(eventId=${event.eventId})}" method="post">
+        <select name="userId">
+            <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
+        </select>
+        <button type="submit">Attend</button>
+    </form>
+    <h2>Unmark Attendance</h2>
+    <form th:action="@{/events/events/{eventId}/unattend(eventId=${event.eventId})}" method="post">
+        <select name="userId">
+            <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
+        </select>
+        <button type="submit">Unattend</button>
+    </form>
 </div>
 </body>
 </html>

@@ -16,7 +16,7 @@ public class UserTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "type_id")
-    private int typeId;
+    private Long typeId;
 
     @NotNull
     @Size(min = 5, max = 25)

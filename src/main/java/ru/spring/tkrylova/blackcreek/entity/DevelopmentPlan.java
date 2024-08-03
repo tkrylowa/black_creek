@@ -19,7 +19,7 @@ public class DevelopmentPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "development_plan_id")
-    private int developmentPlanId;
+    private Long developmentPlanId;
 
     @NotNull
     @Size(min = 5, max = 25)

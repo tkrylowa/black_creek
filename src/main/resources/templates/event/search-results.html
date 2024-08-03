@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+<body>
+<div th:replace="fragments :: header"></div>
+<h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
+<ul>
+    <li th:each="event : ${events}">
+        <a th:href="@{event/events/{id}(id=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
+    </li>
+</ul>
+</body>
+</html>

@@ -20,7 +20,7 @@ public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "place_id")
-    private int placeId;
+    private Long placeId;
 
     @NotNull
     @Size(min = 5, max = 100)

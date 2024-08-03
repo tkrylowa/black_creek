@@ -16,10 +16,16 @@ public class BookingService {
     }
 
     public List<Booking> getBookingsForEvent(Long eventId) {
+        if (eventId == null) {
+            throw new RuntimeException("Event not found");
+        }
         return bookingsRepository.findByEventId(eventId);
     }
 
     public List<Booking> getBookingsForUser(Long userId) {
+        if (userId == null) {
+            throw new RuntimeException("User not found");
+        }
         return bookingsRepository.findByUserId(userId);
     }
 

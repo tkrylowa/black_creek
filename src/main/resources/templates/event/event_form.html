@@ -3,8 +3,10 @@
 <head>
     <title>Add Event</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
 <body>
+<div th:replace="fragments :: header"></div>
 <div class="container">
     <h1 class="my-4">Add Event</h1>
     <form th:action="@{/event/events}" th:object="${event}" method="post" class="form">
@@ -14,11 +16,15 @@
         </div>
         <div class="form-group">
             <label>Description</label>
-            <input type="text" th:field="*{description}" class="form-control" />
+            <input type="text" th:field="*{eventDescription}" class="form-control" />
         </div>
         <div class="form-group">
-            <label>Date</label>
-            <input type="date" th:field="*{date}" class="form-control" />
+            <label>Start date</label>
+            <input type="date" th:field="*{eventStartDate}" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>End date</label>
+            <input type="date" th:field="*{eventEndDate}" class="form-control" />
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>

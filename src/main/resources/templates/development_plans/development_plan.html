@@ -1,17 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.thymeleaf.org ">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Development Plans</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
 <body>
-<h1>Development Plans</h1>
-<ul>
-    <li th:each="plan : ${developmentPlans}">
-        <span th:text="${plan.name}">Plan Name</span> -
-        <span th:text="${plan.description}">Description</span>
-    </li>
-</ul>
-<a th:href="@{/development_plans/development_plans/new}">Add Development Plan</a>
+<div th:replace="fragments :: header"></div>
+<div class="container">
+    <h1 class="my-4">Events</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="plan : ${developmentPlans}">
+            <td th:text="${plan.name}">Plan Name</td>
+            <td th:text="${plan.description}">Description</td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/development_plans/development_plans/new}" class="btn btn-success">Add Development Plan</a>
+</div>
 </body>
 </html>

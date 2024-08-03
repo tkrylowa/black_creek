@@ -19,15 +19,15 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
-    private int bookingId;
+    private Long bookingId;
 
     @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    private Integer event_id;
+    private Long event_id;
 
     @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Integer user_id;
+    private Long user_id;
 
     @CreatedDate
     @Column(name = "booking_date",
