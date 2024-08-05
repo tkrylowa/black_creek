@@ -13,20 +13,25 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "comment")
-public class Comment {
+public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long commentId;
 
-    @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "event_id")
     private BlackCreekEvent event;
 
-    @ManyToOne(targetEntity = BlackCreekUser.class, fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private BlackCreekUser user;
 
-    @Column(name = "content")
-    private String content;
+    @Column(name = "comments")
+    private String comments;
+
+    @Column(name = "rating")
+    private int rating;
 
     @CreatedDate
     @Column(name = "created_at",

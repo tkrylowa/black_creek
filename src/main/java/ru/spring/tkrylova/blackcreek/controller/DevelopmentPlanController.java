@@ -1,5 +1,6 @@
 package ru.spring.tkrylova.blackcreek.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import ru.spring.tkrylova.blackcreek.servce.DevelopmentPlanService;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/development_plans")
 public class DevelopmentPlanController {
@@ -23,6 +25,7 @@ public class DevelopmentPlanController {
     @GetMapping
     public String getAllDevelopmentPlans(Model model) {
         List<DevelopmentPlan> developmentPlans = developmentPlanService.getAllPlans();
+        log.atInfo().log("Found {} developments plans", developmentPlans.size());
         model.addAttribute("developmentPlans", developmentPlans);
         return "development_plans/development_plan";
     }
@@ -35,7 +38,8 @@ public class DevelopmentPlanController {
 
     @PostMapping("/add")
     public String createDevelopmentPlan(@ModelAttribute DevelopmentPlan developmentPlan) {
-        developmentPlanService.savePlan(developmentPlan);
+        DevelopmentPlan newDevelopmentPlan = developmentPlanService.savePlan(developmentPlan);
+        log.atInfo().log("New development plan with id {} was successfully created", newDevelopmentPlan.getDevelopmentPlanId());
         return "redirect:/development_plans/development_plans";
     }
 }

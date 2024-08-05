@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Event Details</title>
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!--    <link th:href="@{/static/css/styles.css}" rel="stylesheet">-->
 </head>
 <body>
 <div th:replace="fragments :: header"></div>
@@ -27,5 +28,27 @@
     </select>
     <button type="submit">Set Responsible Person</button>
 </form>
+<h2>Feedback</h2>
+<form th:action="@{/events/{eventId}/feedback(eventId=${event.id})}" method="post">
+    <input type="hidden" name="userId" th:value="${#authentication.principal.id}" />
+    <label for="comments">Comments:</label>
+    <textarea id="comments" name="comments"></textarea>
+    <label for="rating">Rating:</label>
+    <select id="rating" name="rating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    <button type="submit">Submit Feedback</button>
+</form>
+
+<h3>Existing Feedback</h3>
+<ul>
+    <li th:each="feedback : ${feedbacks}">
+        <p><strong th:text="${feedback.user.username}">Username</strong>: <span th:text="${feedback.comments}">Comments</span> (Rating: <span th:text="${feedback.rating}">Rating</span>)</p>
+    </li>
+</ul>
 </body>
 </html>

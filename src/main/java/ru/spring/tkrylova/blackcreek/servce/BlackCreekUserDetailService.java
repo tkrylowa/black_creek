@@ -1,5 +1,6 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -13,6 +14,7 @@ import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class BlackCreekUserDetailService implements UserDetailsService {
     final private BlackCreekUserRepository blackCreekUserRepository;
@@ -23,7 +25,10 @@ public class BlackCreekUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        BlackCreekUser blackCreekUser = blackCreekUserRepository.findByLogin(login).orElseThrow(() -> new UsernameNotFoundException(""));
+        BlackCreekUser blackCreekUser = blackCreekUserRepository.findByLogin(login).orElseThrow(() -> {
+            log.atError().log("User not found");
+            return new UsernameNotFoundException("");
+        });
         GrantedAuthority authority = new SimpleGrantedAuthority(blackCreekUser.getUserRole().getRoleType().name());
         return new User(login, blackCreekUser.getPassword(), Set.of(authority));
     }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Photos</title>
+</head>
+<body>
+<h1>Upload Photos for Event: <span th:text="${event.name}"></span></h1>
+<form method="POST" enctype="multipart/form-data" action="/event/events/{event.id}/photos">
+    <input type="file" name="file"/>
+    <button type="submit">Upload Photo</button>
+</form>
+<p th:if="${message}" th:text="${message}"></p>
+
+<h2>Gallery</h2>
+<div>
+    <div th:each="photo : ${event.photos}">
+        <img th:src="@{${photo.filePath}}" alt="Photo" style="width: 100px; height: 100px;"/>
+    </div>
+</div>
+</body>
+</html>

@@ -22,7 +22,7 @@ public class DevelopmentPlanService {
         return developmentPlanRepository.findById(id).orElse(null);
     }
 
-    public void savePlan(DevelopmentPlan plan) {
-        developmentPlanRepository.save(plan);
+    public DevelopmentPlan savePlan(DevelopmentPlan plan) {
+        return developmentPlanRepository.save(plan);
     }
 }

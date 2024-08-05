@@ -1,61 +1,77 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
+import ru.spring.tkrylova.blackcreek.entity.Feedback;
+import ru.spring.tkrylova.blackcreek.entity.Photo;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekEventRepository;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
+import ru.spring.tkrylova.blackcreek.repository.FeedbackRepository;
+import ru.spring.tkrylova.blackcreek.repository.PhotoRepository;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BlackCreekEventService {
+    private static final Logger log = LoggerFactory.getLogger(BlackCreekEventService.class);
     private final BlackCreekEventRepository blackCreekEventRepository;
     private final BlackCreekUserRepository blackCreekUserRepository;
-    private final  EmailService emailService;
+    private final EmailService emailService;
+    private final FeedbackRepository feedbackRepository;
+    private final PhotoRepository photoRepository;
 
-    public BlackCreekEventService(BlackCreekEventRepository blackCreekEventRepository, BlackCreekUserRepository blackCreekUserRepository, EmailService emailService) {
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+    public BlackCreekEventService(BlackCreekEventRepository blackCreekEventRepository, BlackCreekUserRepository blackCreekUserRepository, EmailService emailService, FeedbackRepository feedbackRepository, PhotoRepository photoRepository) {
         this.blackCreekEventRepository = blackCreekEventRepository;
         this.blackCreekUserRepository = blackCreekUserRepository;
         this.emailService = emailService;
+        this.feedbackRepository = feedbackRepository;
+        this.photoRepository = photoRepository;
     }
 
     public List<BlackCreekEvent> getAllEvents() {
         return blackCreekEventRepository.findAll();
     }
 
-    public BlackCreekEvent getEventById(Long id) {
+    public BlackCreekEvent findEventById(Long id) {
         return blackCreekEventRepository.findById(id).orElse(null);
     }
 
-    public void saveEvent(BlackCreekEvent event) {
-        blackCreekEventRepository.save(event);
+    public BlackCreekEvent saveEvent(BlackCreekEvent event) {
+        return blackCreekEventRepository.save(event);
     }
 
     public BlackCreekEvent setResponsibleUserToEvent(Long eventId, Long userId) {
-        BlackCreekEvent event = getEventById(eventId);
+        BlackCreekEvent event = findEventById(eventId);
         event.setResponsibleUserId(userId);
         return blackCreekEventRepository.save(event);
     }
 
     public BlackCreekEvent setCostToEvent(Long eventId, Double cost) {
-        if (eventId == null) {
-            throw new RuntimeException("Event not found");
-        }
-        BlackCreekEvent event = getEventById(eventId);
+        verifyIdNull(eventId, "Event");
+        BlackCreekEvent event = findEventById(eventId);
         event.setCost(cost);
         return blackCreekEventRepository.save(event);
     }
 
     public BlackCreekEvent addUserToEvent(Long eventId, Long userId) {
-        if (userId == null) {
-            throw new RuntimeException("User not found");
-        }
-        if (eventId == null) {
-            throw new RuntimeException("Event not found");
-        }
-        BlackCreekEvent event = getEventById(eventId);
+        verifyIdNull(userId, "User");
+        verifyIdNull(eventId, "Event");
+        BlackCreekEvent event = findEventById(eventId);
         BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow();
         event.getUsers().add(user);
         BlackCreekEvent updatedEvent = blackCreekEventRepository.save(event);
@@ -84,12 +100,8 @@ public class BlackCreekEventService {
     }
 
     public BlackCreekEvent markAttendance(Long eventId, Long userId) {
-        if (userId == null) {
-            throw new RuntimeException("User not found");
-        }
-        if (eventId == null) {
-            throw new RuntimeException("Event not found");
-        }
+        verifyIdNull(userId, "User");
+        verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         BlackCreekUser user = blackCreekUserRepository.findById(userId)
@@ -100,12 +112,8 @@ public class BlackCreekEventService {
     }
 
     public BlackCreekEvent unmarkAttendance(Long eventId, Long userId) {
-        if (userId == null) {
-            throw new RuntimeException("User not found");
-        }
-        if (eventId == null) {
-            throw new RuntimeException("Event not found");
-        }
+        verifyIdNull(userId, "User");
+        verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         BlackCreekUser user = blackCreekUserRepository.findById(userId)
@@ -115,12 +123,8 @@ public class BlackCreekEventService {
     }
 
     public boolean isUserAttending(Long eventId, Long userId) {
-        if (userId == null) {
-            throw new RuntimeException("User not found");
-        }
-        if (eventId == null) {
-            throw new RuntimeException("Event not found");
-        }
+        verifyIdNull(userId, "User");
+        verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         return event.getAttendees().stream().anyMatch(u -> u.getUserId().equals(userId));
@@ -131,7 +135,7 @@ public class BlackCreekEventService {
     }
 
     public BlackCreekEvent cancelEvent(Long eventId) {
-        BlackCreekEvent event = getEventById(eventId);
+        BlackCreekEvent event = findEventById(eventId);
         event.setCancelled(true);
         BlackCreekEvent cancelledEvent = blackCreekEventRepository.save(event);
         notifyAttendees(cancelledEvent);
@@ -149,4 +153,44 @@ public class BlackCreekEventService {
         }
     }
 
+    public Feedback addFeedback(Long eventId, Long userId, String comments, int rating) {
+        verifyIdNull(userId, "User");
+        verifyIdNull(eventId, "Event");
+        BlackCreekEvent event = findEventById(eventId);
+        BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Feedback feedback = Feedback.builder()
+                .event(event)
+                .user(user)
+                .comments(comments)
+                .rating(rating)
+                .build();
+        return feedbackRepository.save(feedback);
+    }
+
+    public List<Feedback> getFeedbackForEvent(Long eventId) {
+        return feedbackRepository.findByEventId(eventId);
+    }
+
+    public void addPhoto(Long eventId, MultipartFile file) throws IOException {
+        verifyIdNull(eventId, "Event");
+        BlackCreekEvent event = findEventById(eventId);
+        if (!file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            Path path = Paths.get(uploadDir + File.separator + fileName);
+            Files.copy(file.getInputStream(), path);
+            Photo photo = Photo.builder()
+                    .fileName(fileName)
+                    .filePath("/uploads/" + fileName)
+                    .event(event)
+                    .build();
+            photoRepository.save(photo);
+        }
+    }
+
+    private void verifyIdNull(Long id, String typeOfId) {
+        if (id == null) {
+            log.atError().log("{} not found", typeOfId);
+            throw new RuntimeException("Id not found");
+        }
+    }
 }

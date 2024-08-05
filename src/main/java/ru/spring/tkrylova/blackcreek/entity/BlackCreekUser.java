@@ -81,6 +81,9 @@ public class BlackCreekUser {
     @ManyToMany(mappedBy = "attendees")
     private Set<BlackCreekEvent> attendedEvents = new HashSet<>();
 
+    @OneToMany(mappedBy = "users")
+    private Set<Feedback> feedbacks = new HashSet<>();
+
     @CreatedDate
     @Column(name = "created_at",
             updatable = false)

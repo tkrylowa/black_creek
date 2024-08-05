@@ -23,10 +23,10 @@ public class BlackCreekUserService {
         this.userRoleRepository = userRoleRepository;
     }
 
-    public void saveUser(BlackCreekUser user) {
+    public BlackCreekUser saveUser(BlackCreekUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         UserRole userRole = userRoleRepository.findByName("ROLE_REGISTERED_USER");
-        blackCreekUserRepository.save(user);
+        return blackCreekUserRepository.save(user);
     }
 
     public BlackCreekUser updateUser(BlackCreekUser user) {

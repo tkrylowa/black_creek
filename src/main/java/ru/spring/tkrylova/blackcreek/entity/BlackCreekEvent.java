@@ -7,7 +7,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -86,6 +88,12 @@ public class BlackCreekEvent {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<BlackCreekUser> attendees = new HashSet<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Feedback> feedbacks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Photo> photos = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at",
