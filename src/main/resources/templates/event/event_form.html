@@ -2,33 +2,53 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Event</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments :: header"></div>
-<div class="container">
-    <h1 class="my-4">Add Event</h1>
-    <form th:action="@{/event/events}" th:object="${event}" method="post" class="form">
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" th:field="*{name}" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" th:field="*{eventDescription}" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Start date</label>
-            <input type="date" th:field="*{eventStartDate}" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>End date</label>
-            <input type="date" th:field="*{eventEndDate}" class="form-control" />
-        </div>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-    <a th:href="@{/event/events}" class="btn btn-secondary mt-3">Back to Events</a>
-</div>
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<main>
+    <div class="container">
+        <h1 class="my-4">Add Event</h1>
+        <form th:action="@{/events/add}" th:object="${event}" method="post" class="form">
+            <div class="form-group">
+                <label>Name</label>
+                <label>
+                    <input type="text" th:field="*{eventName}" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <label>
+                    <input type="text" th:field="*{eventDescription}" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Start date</label>
+                <label>
+                    <input type="date" th:field="*{eventStartDate}" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>End date</label>
+                <label>
+                    <input type="date" th:field="*{eventEndDate}" class="form-control"/>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Event capacity (how mane people)</label>
+                <label>
+                    <input type="number" th:field="*{eventCapacity}" class="form-control" value="3"/>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <a th:href="@{/events}" class="btn btn-secondary mt-3">Back to Events</a>
+    </div>
+</main>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>

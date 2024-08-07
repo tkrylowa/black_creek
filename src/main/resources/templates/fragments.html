@@ -1,29 +1,15 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medieval park</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/static/css/styles.css}" rel="stylesheet">
-</head>
-<body>
-<!-- Header Fragment -->
-<div th:fragment="header">
-    <header>
-        <h1>Welcome to Medieval Park</h1>
-        <nav>
-            <a href="/" th:text="#{home}">Home</a>
-            <a href="/events" th:text="#{events}">Events</a>
-        </nav>
-    </header>
+<div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml" class="header">
+    <h1>Welcome to Medieval Park</h1>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/login}">Login</a></li>
+            <li><a th:href="@{/development_plans}">Development Plans</a></li>
+            <li><a th:href="@{/events}">Events</a></li>
+        </ul>
+    </nav>
 </div>
 
-<!-- Footer Fragment -->
-<div th:fragment="footer">
-    <footer>
-        <p>&copy; 2024 Medieval Park</p>
-    </footer>
+<div th:fragment="footer" xmlns:th="http://www.w3.org/1999/xhtml" class="footer">
+    <p>&copy; 2024 Medieval Park</p>
 </div>
-</body>
-</html>

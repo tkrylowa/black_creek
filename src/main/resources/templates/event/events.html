@@ -2,52 +2,69 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Events</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments :: header"></div>
-<div class="container">
-    <h1 class="my-4">Events</h1>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="event : ${events}">
-            <td th:text="${event.name}">Event Name</td>
-            <td th:text="${event.description}">Description</td>
-            <td th:text="${event.date}">Date</td>
-            <td>
-                <a th:href="@{/event/events/register/{id}(id=${event.id})}" class="btn btn-primary">Register</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <a th:href="@{/event/events/new}" class="btn btn-success">Add Event</a>
-    <h2>Attendees</h2>
-    <ul>
-        <li th:each="attendee : ${event.attendees}" th:text="${attendee.login}"></li>
-    </ul>
-    <h2>Mark Attendance</h2>
-    <form th:action="@{/events/events/{eventId}/attend(eventId=${event.eventId})}" method="post">
-        <select name="userId">
-            <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
-        </select>
-        <button type="submit">Attend</button>
-    </form>
-    <h2>Unmark Attendance</h2>
-    <form th:action="@{/events/events/{eventId}/unattend(eventId=${event.eventId})}" method="post">
-        <select name="userId">
-            <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
-        </select>
-        <button type="submit">Unattend</button>
-    </form>
-</div>
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<main>
+    <div th:if="${events.empty}">
+        <p>No events available at the moment.</p>
+    </div>
+    <div th:unless="${events.empty}">
+        <div class="events-container">
+            <h1 class="my-4">Events</h1>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Capacity</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="event : ${events}">
+                    <td th:text="${event.eventName}">Event Name</td>
+                    <td th:text="${event.eventDescription}">Description</td>
+                    <td th:text="${event.eventStartDate}">Start date</td>
+                    <td th:text="${event.eventEndDate}">End date</td>
+                    <td th:text="${event.eventCapacity}">Capacity</td>
+                    <td>
+                        <a th:href="@{/events/register/{id}(id=${event.eventId})}" class="btn btn-primary">Register</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <a th:href="@{/events/new}" class="btn btn-success">Add Event</a>
+<!--            <h2>Attendees</h2>-->
+<!--            <p th:if="${event.attendees.empty}">No attendees yet</p>-->
+<!--            <ul>-->
+<!--                <li th:each="attendee : ${event.attendees}" th:text="${attendee.login}">Attendee Login<</li>-->
+<!--            </ul>-->
+            <h2>Mark Attendance</h2>
+            <form th:action="@{/events/{eventId}/attend(eventId=${event.eventId}, userLogin=${user.login})}" method="post">
+                <select name="userLogin">
+                    <option th:each="user : ${users}" th:value="${user.login}" th:text="${user.login}"></option>
+                </select>
+                <button type="submit">Attend</button>
+            </form>
+            <h2>Unmark Attendance</h2>
+            <form th:action="@{/events/{eventId}/unattend(eventId=${event.eventId}, userLogin=${user.login})}" method="post">
+                <select name="userLogin">
+                    <option th:each="user : ${users}" th:value="${user.login}" th:text="${user.login}"></option>
+                </select>
+                <button type="submit">Unattend</button>
+            </form>
+        </div>
+    </div>
+    <a th:href="@{/events/new}" class="btn btn-success">Add a new Event</a>
+</main>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>

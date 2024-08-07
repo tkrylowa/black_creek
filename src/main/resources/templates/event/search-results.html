@@ -2,16 +2,22 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Search Results</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!--    <link th:href="@{/css/styles.css}" rel="stylesheet">-->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments :: header"></div>
-<h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
-<ul>
-    <li th:each="event : ${events}">
-        <a th:href="@{event/events/{id}(id=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
-    </li>
-</ul>
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<main>
+    <h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
+    <ul>
+        <li th:each="event : ${events}">
+            <a th:href="@{events/{id}(id=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
+        </li>
+    </ul>
+</main>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>

@@ -1,28 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<!--    <link th:href="@{/css/styles.css}" rel="stylesheet">-->
+    <title>Login - Medieval Park</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<h1>Login</h1>
-<div th:replace="fragments :: header"></div>
-<form th:action="@{/login}" method="post">
-    <div>
-        <label>Email</label>
-        <input type="text" name="application_user_email" />
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<main>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form th:action="@{/login}" method="post">
+                <div class="input-group">
+                    <label for="login">Login</label>
+                    <input type="text" id="login" name="application_user_login" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="application_user_password" required>
+                </div>
+                <div class="input-group">
+                    <button type="submit">Login</button>
+                </div>
+                <div th:if="${param.error}" class="error">
+                    Invalid username or password.
+                </div>
+                <div th:if="${param.logout}" class="message">
+                    You have been logged out successfully.
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <label>Login</label>
-        <input type="text" name="application_user_email" />
+    <div class="register-link">
+        <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
     </div>
-    <div>
-        <label>Password</label>
-        <input type="password" name="application_user_password" />
-    </div>
-    <button type="submit">Login</button>
-</form>
-<a th:href="@{/register}">Register</a>
+</main>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>

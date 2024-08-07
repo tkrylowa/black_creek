@@ -9,6 +9,7 @@ import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 import ru.spring.tkrylova.blackcreek.entity.Feedback;
 import ru.spring.tkrylova.blackcreek.entity.Photo;
+import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekEventRepository;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
 import ru.spring.tkrylova.blackcreek.repository.FeedbackRepository;
@@ -21,7 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BlackCreekEventService {
@@ -72,7 +72,7 @@ public class BlackCreekEventService {
         verifyIdNull(userId, "User");
         verifyIdNull(eventId, "Event");
         BlackCreekEvent event = findEventById(eventId);
-        BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow();
+        BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         event.getUsers().add(user);
         BlackCreekEvent updatedEvent = blackCreekEventRepository.save(event);
         notifyUserOfAddedToEvent(user, event);
@@ -99,25 +99,25 @@ public class BlackCreekEventService {
         return blackCreekEventRepository.findByEventStartDateBetween(start, end);
     }
 
-    public BlackCreekEvent markAttendance(Long eventId, Long userId) {
-        verifyIdNull(userId, "User");
+    public BlackCreekEvent markAttendance(Long eventId, String userName) {
+        verifyLoginNull(userName, "User");
         verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
-        BlackCreekUser user = blackCreekUserRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        BlackCreekUser user = blackCreekUserRepository.findByLogin(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         event.getAttendees().add(user);
         return blackCreekEventRepository.save(event);
     }
 
-    public BlackCreekEvent unmarkAttendance(Long eventId, Long userId) {
-        verifyIdNull(userId, "User");
+    public BlackCreekEvent unmarkAttendance(Long eventId, String userName) {
+        verifyLoginNull(userName, "User");
         verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
-        BlackCreekUser user = blackCreekUserRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        BlackCreekUser user = blackCreekUserRepository.findByLogin(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         event.getAttendees().remove(user);
         return blackCreekEventRepository.save(event);
     }
@@ -126,12 +126,12 @@ public class BlackCreekEventService {
         verifyIdNull(userId, "User");
         verifyIdNull(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         return event.getAttendees().stream().anyMatch(u -> u.getUserId().equals(userId));
     }
 
     public List<BlackCreekEvent> searchEvents(String keyword) {
-        return blackCreekEventRepository.searchBlackCreekEventByEventNameOrEventDescription(keyword);
+        return blackCreekEventRepository.searchEventByEventNameOrEventDescription(keyword);
     }
 
     public BlackCreekEvent cancelEvent(Long eventId) {
@@ -157,7 +157,7 @@ public class BlackCreekEventService {
         verifyIdNull(userId, "User");
         verifyIdNull(eventId, "Event");
         BlackCreekEvent event = findEventById(eventId);
-        BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Feedback feedback = Feedback.builder()
                 .event(event)
                 .user(user)
@@ -189,8 +189,13 @@ public class BlackCreekEventService {
 
     private void verifyIdNull(Long id, String typeOfId) {
         if (id == null) {
-            log.atError().log("{} not found", typeOfId);
-            throw new RuntimeException("Id not found");
+            throw new ResourceNotFoundException("Id not found");
+        }
+    }
+
+    private void verifyLoginNull(String login, String typeOfId) {
+        if (login == null && !login.isEmpty() && !login.isBlank()) {
+            throw new ResourceNotFoundException(String.format("%s not found", typeOfId));
         }
     }
 }

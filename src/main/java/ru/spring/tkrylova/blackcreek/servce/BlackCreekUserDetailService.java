@@ -25,11 +25,11 @@ public class BlackCreekUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        BlackCreekUser blackCreekUser = blackCreekUserRepository.findByLogin(login).orElseThrow(() -> {
-            log.atError().log("User not found");
-            return new UsernameNotFoundException("");
+        BlackCreekUser blackCreekUser = getUserByLogin(login).orElseThrow(() -> {
+            log.error("User not found");
+            return new UsernameNotFoundException("User not found");
         });
-        GrantedAuthority authority = new SimpleGrantedAuthority(blackCreekUser.getUserRole().getRoleType().name());
+        GrantedAuthority authority = new SimpleGrantedAuthority(blackCreekUser.getUserRole().getRoleName());
         return new User(login, blackCreekUser.getPassword(), Set.of(authority));
     }
 

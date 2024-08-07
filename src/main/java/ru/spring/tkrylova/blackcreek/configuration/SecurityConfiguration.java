@@ -1,6 +1,7 @@
 package ru.spring.tkrylova.blackcreek.configuration;
 
 import javax.security.auth.login.AccountException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,56 +24,57 @@ import java.text.MessageFormat;
 @Configuration
 public class SecurityConfiguration {
 
-  private final BlackCreekUserDetailService blackCreekUserDetailService;
+    private final BlackCreekUserDetailService blackCreekUserDetailService;
 
-  public SecurityConfiguration(BlackCreekUserDetailService blackCreekUserDetailService) {
-    this.blackCreekUserDetailService = blackCreekUserDetailService;
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws AccountException {
-    try {
-      return config.getAuthenticationManager();
-    } catch (Exception e) {
-      throw new AccountException(MessageFormat.format("AuthenticationManager not configured: {0}", e.getMessage()));
+    public SecurityConfiguration(BlackCreekUserDetailService blackCreekUserDetailService) {
+        this.blackCreekUserDetailService = blackCreekUserDetailService;
     }
-  }
 
-  public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setUserDetailsService(blackCreekUserDetailService);
-    provider.setPasswordEncoder(passwordEncoder());
-    return provider;
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-    return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-        .authenticationProvider(authenticationProvider())
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/account/registration", "/account/login")
-            .permitAll()
-            .anyRequest()
-            .authenticated())
-        .formLogin(form -> form
-            .usernameParameter("application_user_email")
-            .passwordParameter("application_user_password")
-            .loginPage("/account/login")
-            .loginProcessingUrl("/account/login")
-            .failureUrl("/account/login?failed")
-            .defaultSuccessUrl("/account")
-            .permitAll())
-        .logout(logout -> logout.logoutUrl(
-                "/account/logout")
-            .logoutSuccessUrl("/account/login")
-            .permitAll())
-        .build();
-  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws AccountException {
+        try {
+            return config.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new AccountException(MessageFormat.format("AuthenticationManager not configured: {0}", e.getMessage()));
+        }
+    }
+
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(blackCreekUserDetailService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .authenticationProvider(authenticationProvider())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/login**", "/register**", "/css/**", "/error**")
+                        .permitAll()
+                        .requestMatchers("/events**", "/development_plans**", "/css/**", "/error**").hasRole("REGISTERED_USER")
+                        .anyRequest()
+                        .authenticated())
+                .formLogin(form -> form
+                        .usernameParameter("application_user_login")
+                        .passwordParameter("application_user_password")
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .failureUrl("/login-error")
+                        .defaultSuccessUrl("/")
+                        .permitAll())
+                .logout(logout -> logout.logoutUrl(
+                                "/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
+                .build();
+    }
 
 }

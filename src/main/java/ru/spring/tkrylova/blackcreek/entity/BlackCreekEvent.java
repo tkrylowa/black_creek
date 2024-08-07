@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,22 +34,22 @@ public class BlackCreekEvent {
 
     @FutureOrPresent
     @Column(name = "event_start_date")
-    private LocalDateTime eventStartDate;
+    private LocalDate eventStartDate;
 
     @Future
     @Column(name = "event_end_date")
-    private LocalDateTime eventEndDate;
+    private LocalDate eventEndDate;
 
     @Size(min = 10)
     @Column(name = "event_description")
     private String eventDescription;
 
     @NotNull
-    @Size(min = 2)
+    @Min(2)
     @Column(name = "event_capacity",
             nullable = false)
 //    how many people can be attended on event
-    private Long eventCapacity;
+    private Integer eventCapacity;
 
     @ManyToOne(targetEntity = EventTypes.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id")
@@ -92,7 +93,7 @@ public class BlackCreekEvent {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos = new ArrayList<>();
 
     @CreatedDate
@@ -102,7 +103,7 @@ public class BlackCreekEvent {
 
     @Column(name = "created_by",
             updatable = false,
-            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT current_user")
+            columnDefinition = "VARCHAR(50) DEFAULT 'current_user'")
     private String createdBy;
 
     @UpdateTimestamp

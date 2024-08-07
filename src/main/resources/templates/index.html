@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Event Search</title>
+    <title>Home - Medieval Park</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
@@ -9,10 +9,10 @@
     <div th:replace="~{./fragments.html :: header}"></div>
 </header>
 <main>
-    <form th:action="@{/events/search}" method="get">
-        <input type="text" name="keyword" placeholder="Search for events" required>
-        <button type="submit">Search</button>
-    </form>
+    <div>
+        <h2>Welcome to Medieval Park!</h2>
+        <p>Discover the wonders of the medieval era through our interactive events</p>
+    </div>
 </main>
 <footer>
     <div th:replace="~{./fragments.html :: footer}"></div>

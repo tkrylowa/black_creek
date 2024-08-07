@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
+import ru.spring.tkrylova.blackcreek.entity.RoleType;
 import ru.spring.tkrylova.blackcreek.entity.UserRole;
+import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
 import ru.spring.tkrylova.blackcreek.repository.UserRoleRepository;
 
@@ -25,12 +27,19 @@ public class BlackCreekUserService {
 
     public BlackCreekUser saveUser(BlackCreekUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        UserRole userRole = userRoleRepository.findByName("ROLE_REGISTERED_USER");
+        user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
+        UserRole userRole = userRoleRepository.findByRoleName(RoleType.ROLE_REGISTERED_USER.name());
+        if(userRole == null){
+            userRole = new UserRole();
+            userRole.setRoleName(RoleType.ROLE_REGISTERED_USER.name());
+            userRoleRepository.save(userRole);
+        }
+        user.setUserRole(userRole);
         return blackCreekUserRepository.save(user);
     }
 
     public BlackCreekUser updateUser(BlackCreekUser user) {
-        BlackCreekUser existingUser = blackCreekUserRepository.findById(user.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        BlackCreekUser existingUser = blackCreekUserRepository.findById(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         existingUser.setLogin(user.getLogin());
         existingUser.setEmail(user.getEmail());
         if (!user.getPassword().isEmpty()) {
@@ -46,5 +55,9 @@ public class BlackCreekUserService {
 
     public BlackCreekUser findUserById(Long id) {
         return blackCreekUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+    }
+
+    public boolean isLoginTaken(String login){
+        return blackCreekUserRepository.findByLogin(login).isPresent();
     }
 }

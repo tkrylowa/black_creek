@@ -79,11 +79,11 @@ public class EventServiceTest {
     void markAttendance_ThrowsRuntimeException_NotPositiveId() {
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> blackCreekEventService.markAttendance(-1L, 1L)
+                () -> blackCreekEventService.markAttendance(-1L, "Non empty")
         );
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> blackCreekEventService.markAttendance(1L, -1L)
+                () -> blackCreekEventService.markAttendance(1L, null)
         );
     }
 
@@ -91,11 +91,11 @@ public class EventServiceTest {
     void unmarkAttendance_ThrowsRuntimeException_NotPositiveId() {
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> blackCreekEventService.unmarkAttendance(-1L, 1L)
+                () -> blackCreekEventService.unmarkAttendance(-1L, "Non empty")
         );
         Assertions.assertThrows(
                 RuntimeException.class,
-                () -> blackCreekEventService.unmarkAttendance(1L, -1L)
+                () -> blackCreekEventService.unmarkAttendance(1L, null)
         );
     }
 
@@ -113,7 +113,7 @@ public class EventServiceTest {
 
     @Test
     public void testSearchEvents() {
-        when(blackCreekEventRepository.searchBlackCreekEventByEventNameOrEventDescription("Medieval"))
+        when(blackCreekEventRepository.searchEventByEventNameOrEventDescription("Medieval"))
                 .thenReturn(Collections.singletonList(blackCreekEvent));
 
         List<BlackCreekEvent> events = blackCreekEventService.searchEvents("Medieval");

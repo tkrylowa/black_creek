@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Internal Server Error</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <h1>Internal Server Error</h1>
+    </div>
+</header>
+<main>
+    <div class="error-container">
+        <h2>Oops! Something went wrong on our side.</h2>
+        <p>An unexpected error occurred. Please try again later.</p>
+        <div>
+            <span><strong>Message</strong></span>
+            <span th:text="${errorMessage}"></span>
+        </div>
+        <div>
+            <span><strong>Full stack trace</strong></span>
+            <span th:text="${errorTrace}"></span>
+        </div>
+        <a href="/" class="btn">Go to Homepage</a>
+    </div>
+</main>
+</body>
+</html>

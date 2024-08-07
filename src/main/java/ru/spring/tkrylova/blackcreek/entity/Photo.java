@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 @Entity
 @Getter
@@ -21,7 +20,7 @@ public class Photo {
     @Column(name = "file_path")
     private String filePath;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private BlackCreekEvent event;
 }

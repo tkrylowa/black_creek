@@ -7,7 +7,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,15 +30,14 @@ public class BlackCreekUser {
     private Long typeId;
 
     @NotNull
-    @Email
+    @Email(message = "Email should be valid")
     @Column(name = "email",
             nullable = false,
             unique = true)
     private String email;
 
     @NotBlank(message = "Login is required")
-    @Pattern(regexp = "^[a-zA-Z0-9]{6,12}$",
-            message = "login must be of 6 to 12 length with no special characters")
+    @Size(min = 6, message = "Login must be between 6 and 20 characters")
     @Column(name = "login",
             nullable = false,
             unique = true)
@@ -53,13 +54,16 @@ public class BlackCreekUser {
     private String lastName;
 
     @NotNull
-    @Pattern(regexp = "^((?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])){8,16}$",
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=]).{8,}$",
             message = "password must contain at least 1 uppercase, 1 lowercase, 1 special character and 1 digit")
-    @Size(min = 8, max = 16)
     @Column(name = "password",
-            nullable = false,
-            unique = true)
+            nullable = false)
     private String password;
+
+    @NotNull
+    @Column(name = "confirm_password",
+            nullable = false)
+    private String confirmPassword;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -81,8 +85,8 @@ public class BlackCreekUser {
     @ManyToMany(mappedBy = "attendees")
     private Set<BlackCreekEvent> attendedEvents = new HashSet<>();
 
-    @OneToMany(mappedBy = "users")
-    private Set<Feedback> feedbacks = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private List<Feedback> feedbacks = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at",
@@ -91,7 +95,7 @@ public class BlackCreekUser {
 
     @Column(name = "created_by",
             updatable = false,
-            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT current_user")
+            columnDefinition = "VARCHAR(50) DEFAULT 'current_user'")
     private String createdBy;
 
     @UpdateTimestamp
@@ -101,6 +105,6 @@ public class BlackCreekUser {
 
     @Column(name = "updated_by",
             updatable = false,
-            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT current_user")
+            columnDefinition = "VARCHAR(50) DEFAULT 'current_user'")
     private String updatedBy;
 }

@@ -2,25 +2,31 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Development Plan</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<!--    <link th:href="@{/css/styles.css}" rel="stylesheet">-->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments :: header"></div>
-<div class="container">
-    <h1 class="my-4">Add Development Plan</h1>
-    <form th:action="@{/development_plans/development_plans}" th:object="${event}" method="${developmentPlan}" class="form">
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" th:field="*{name}" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" th:field="*{description}" class="form-control" />
-        </div>
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-    <a th:href="@{/development_plans/development_plans}" class="btn btn-secondary mt-3">Back to Development Plans</a>
-</div>
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<main>
+    <div class="container">
+        <h1 class="my-4">Add Development Plan</h1>
+        <form th:action="@{/development_plans/add}" th:object="${event}" method="${developmentPlan}" class="form">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" th:field="*{name}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" th:field="*{description}" class="form-control"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <a th:href="@{/development_plans}" class="btn btn-secondary mt-3">Back to Development Plans</a>
+    </div>
+</main>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>

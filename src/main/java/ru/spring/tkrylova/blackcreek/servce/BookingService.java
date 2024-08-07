@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.Booking;
 import ru.spring.tkrylova.blackcreek.entity.BookingStatus;
+import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BookingsRepository;
 
 import java.util.List;
@@ -19,16 +20,14 @@ public class BookingService {
 
     public List<Booking> getBookingsForEvent(Long eventId) {
         if (eventId == null) {
-            log.atError().log("Event not found");
-            throw new RuntimeException("Event not found");
+            throw new ResourceNotFoundException("Event not found");
         }
         return bookingsRepository.findByEventId(eventId);
     }
 
     public List<Booking> getBookingsForUser(Long userId) {
         if (userId == null) {
-            log.atError().log("Event not found");
-            throw new RuntimeException("User not found");
+            throw new ResourceNotFoundException("User not found");
         }
         return bookingsRepository.findByUserId(userId);
     }

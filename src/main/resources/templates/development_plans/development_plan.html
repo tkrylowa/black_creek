@@ -2,28 +2,38 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Development Plans</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<!--    <link th:href="@{/css/styles.css}" rel="stylesheet">-->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments :: header"></div>
-<div class="container">
-    <h1 class="my-4">Events</h1>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="plan : ${developmentPlans}">
-            <td th:text="${plan.name}">Plan Name</td>
-            <td th:text="${plan.description}">Description</td>
-        </tr>
-        </tbody>
-    </table>
-    <a th:href="@{/development_plans/development_plans/new}" class="btn btn-success">Add Development Plan</a>
+<header>
+    <div th:replace="~{./fragments.html :: header}"></div>
+</header>
+<div th:if="${developmentPlans.empty}">
+    <p>No development plans available at the moment.</p>
+    <a th:href="@{/development_plans/new}" class="btn btn-success">Add Development Plan</a>
 </div>
+<div th:unless="${developmentPlans.empty}">
+    <div class="container">
+        <h1 class="my-4">Development Plans</h1>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="plan : ${developmentPlans}">
+                <td th:text="${plan.name}">Plan Name</td>
+                <td th:text="${plan.description}">Description</td>
+            </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/development_plans/new}" class="btn btn-success">Add Development Plan</a>
+    </div>
+</div>
+<footer>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</footer>
 </body>
 </html>
