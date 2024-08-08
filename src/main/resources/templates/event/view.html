@@ -1,64 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <title>Event Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header>
+<header class="sticky-header">
     <div th:replace="~{./fragments.html :: header}"></div>
 </header>
-<main>
-    <h1 th:text="${event.name}">Event Name</h1>
-    <p>Start Time: <span th:text="${event.startTime}"></span></p>
-    <p>End Time: <span th:text="${event.endTime}"></span></p>
-    <h2>Users</h2>
-    <ul>
-        <li th:each="user : ${event.users}" th:text="${user.username}"></li>
-    </ul>
-    <h2>Add User</h2>
-    <form th:action="@{/events/{eventId}/addUser(eventId=${event.id})}" method="post">
-        <select name="userId">
-            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
-        </select>
-        <button type="submit">Add User</button>
-    </form>
-    <h2>Set Responsible Person</h2>
-    <form th:action="@{/events/{eventId}/setResponsiblePerson(eventId=${event.id})}" method="post">
-        <select name="userId">
-            <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
-        </select>
-        <button type="submit">Set Responsible Person</button>
-    </form>
-    <h2>Feedback</h2>
-    <form th:action="@{/events/{eventId}/feedback(eventId=${event.id})}" method="post">
-        <input type="hidden" name="userId" th:value="${#authentication.principal.id}"/>
-        <label for="comments">Comments:</label>
-        <textarea id="comments" name="comments"></textarea>
-        <label for="rating">Rating:</label>
-        <select id="rating" name="rating">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-        <button type="submit">Submit Feedback</button>
-    </form>
-
-    <h3>Existing Feedback</h3>
-    <ul>
-        <li th:each="feedback : ${feedbacks}">
-            <p><strong th:text="${feedback.user.username}">Username</strong>: <span th:text="${feedback.comments}">Comments</span>
-                (Rating: <span th:text="${feedback.rating}">Rating</span>)</p>
-        </li>
-    </ul>
-
-    <h2>Photo Gallery</h2>
-    <div>
-        <div th:each="photo : ${event.photos}">
-            <img th:src="@{${photo.filePath}}" alt="Photo" style="width: 100px; height: 100px;"/>
+<main class="main-content">
+    <div class="container">
+        <h1 th:text="${event.eventName}">Event Name</h1>
+        <p>Event description: <span th:text="${event.eventDescription}"></span></p>
+        <p>Start Time: <span th:text="${event.eventStartDate}"></span></p>
+        <p>End Time: <span th:text="${event.eventEndDate}"></span></p>
+        <p>Capacity <span th:text="${event.eventCapacity}"></span></p>
+        <p>Cost <span th:text="${event.cost}"></span></p>
+        <p>Is free? <span th:text="${event.isFree}"></span></p>
+        <p>Is cansel? <span th:text="${event.isCancelled}"></span></p>
+        <h2>Attendees</h2>
+        <ul class="attendee-list" th:if="${event.attendees.size() > 0}">
+            <li th:each="attendee : ${event.attendees}" th:text="${attendee.login}">Attendee Name</li>
+        </ul>
+        <p th:if="${event.attendees.size() == 0}">No attendees yet</p>
+        <h2>Add User</h2>
+        <form th:action="@{/events/{eventId}/addUser(eventId=${event.eventId})}" method="post">
+            <label>
+                <select name="userId">
+                    <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
+                </select>
+            </label>
+            <button type="submit">Add User</button>
+        </form>
+        <h2>Set Responsible Person</h2>
+        <form th:action="@{/events/{eventId}/setResponsiblePerson(eventId=${event.eventId})}" method="post">
+            <label>
+                <select name="userId">
+                    <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.login}"></option>
+                </select>
+            </label>
+            <button type="submit">Set Responsible Person</button>
+        </form>
+        <h2>Feedback</h2>
+        <form th:action="@{/events/{eventId}/feedback(eventId=${event.eventId})}" method="post">
+            <label for="comments">Comments:</label>
+            <textarea id="comments" name="comments"></textarea>
+            <label for="rating">Rating:</label>
+            <select id="rating" name="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <button type="submit">Submit Feedback</button>
+        </form>
+        <h3>Existing Feedback</h3>
+        <ul>
+            <li th:each="feedback : ${event.feedbacks}">
+                <p><strong th:text="${feedback.user.login}">Username</strong>: <span
+                        th:text="${feedback.comments}">Comments</span>
+                    (Rating: <span th:text="${feedback.rating}">Rating</span>)</p>
+            </li>
+        </ul>
+        <h2>Add eventPhoto</h2>
+        <form th:action="@{/events/{eventId}/eventPhotos(eventId=${event.eventId})}" method="post" enctype="multipart/form-data">
+            <input type="file" name="photo" accept="image/*" required>
+            <button type="submit" class="btn btn-upload">Upload Photo</button>
+        </form>
+        <div th:if="${event.eventPhotos}">
+            <h3>Event Photos</h3>
+            <div class="gallery">
+                <div th:each="photo : ${event.eventPhotos}" class="gallery-item">
+                    <img th:src="${photo.photoUrl}" alt="Event Photo" class="event-photo">
+                </div>
+            </div>
         </div>
+        <form th:action="@{/events/{eventId}/cancel(eventId=${event.eventId})}"
+              method="post">
+            <button type="submit" class="btn btn-cancel"
+                    onclick="return confirm('Are you sure you want to cancel this event?');">Cancel event
+            </button>
+        </form>
+        <a href="#" th:href="@{/events}" class="btn btn-back">Back to Events</a>
     </div>
 </main>
 <footer>

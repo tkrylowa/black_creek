@@ -5,10 +5,10 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header>
+<header class="sticky-header">
     <div th:replace="~{./fragments.html :: header}"></div>
 </header>
-<main>
+<main class="main-content">
     <div class="container">
         <h1 class="my-4">Add Event</h1>
         <form th:action="@{/events/add}" th:object="${event}" method="post" class="form">
@@ -45,6 +45,7 @@
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <a th:href="@{/events}" class="btn btn-secondary mt-3">Back to Events</a>
+        <div th:utext="${reloadScript}"></div>
     </div>
 </main>
 <footer>

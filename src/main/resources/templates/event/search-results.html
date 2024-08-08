@@ -5,16 +5,18 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header>
+<header class="sticky-header">
     <div th:replace="~{./fragments.html :: header}"></div>
 </header>
-<main>
-    <h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
-    <ul>
-        <li th:each="event : ${events}">
-            <a th:href="@{events/{id}(id=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
-        </li>
-    </ul>
+<main class="main-content">
+    <div class="container">
+        <h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
+        <ul>
+            <li th:each="event : ${events}">
+                <a th:href="@{events/{id}(id=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
+            </li>
+        </ul>
+    </div>
 </main>
 <footer>
     <div th:replace="~{./fragments.html :: footer}"></div>

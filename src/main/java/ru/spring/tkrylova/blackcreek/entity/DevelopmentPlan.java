@@ -25,11 +25,11 @@ public class DevelopmentPlan {
     @Size(min = 5, max = 25)
     @Column(name = "development_plan_name",
             nullable = false)
-    private String aimName;
+    private String developmentPlanName;
 
     @Size(min = 10)
     @Column(name = "development_plan_description")
-    private String aimDescription;
+    private String developmentPlanDescription;
 
     @CreatedDate
     @Column(name = "created_at",
@@ -38,7 +38,7 @@ public class DevelopmentPlan {
 
     @Column(name = "created_by",
             updatable = false,
-            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT current_user")
+            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT 'current_user'")
     private String createdBy;
 
     @UpdateTimestamp

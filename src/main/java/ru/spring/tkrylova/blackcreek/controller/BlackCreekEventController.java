@@ -9,12 +9,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 import ru.spring.tkrylova.blackcreek.entity.Feedback;
-import ru.spring.tkrylova.blackcreek.repository.PhotoRepository;
+import ru.spring.tkrylova.blackcreek.repository.EventPhotoRepository;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekUserService;
 import ru.spring.tkrylova.blackcreek.servce.FeedbackService;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class BlackCreekEventController {
     private final BlackCreekUserService blackCreekUserService;
     private final FeedbackService feedbackService;
 
-    public BlackCreekEventController(BlackCreekEventService blackCreekEventService, BlackCreekUserService blackCreekUserService, FeedbackService feedbackService, PhotoRepository photoRepository) {
+    public BlackCreekEventController(BlackCreekEventService blackCreekEventService, BlackCreekUserService blackCreekUserService, FeedbackService feedbackService, EventPhotoRepository eventPhotoService) {
         this.blackCreekEventService = blackCreekEventService;
         this.blackCreekUserService = blackCreekUserService;
         this.feedbackService = feedbackService;
@@ -50,6 +51,7 @@ public class BlackCreekEventController {
         model.addAttribute("event", new BlackCreekUser());
         BlackCreekEvent savedEvent = blackCreekEventService.saveEvent(event);
         log.info("New event with id {} was successfully created", savedEvent.getEventId());
+        model.addAttribute("reloadScript", "<script>setTimeout(function(){ window.location.reload(); }, 1000);</script>");
         return "redirect:/events";
     }
 
@@ -61,35 +63,37 @@ public class BlackCreekEventController {
         model.addAttribute("event", event);
         model.addAttribute("users", blackCreekUserService.findAllUsers());
         model.addAttribute("comments", feedbacks);
-        return "event/events/view";
+        return "event/view";
     }
 
     @PostMapping("/{eventId}/addUser")
     public String addUserToEvent(@PathVariable Long eventId, @RequestParam Long userId) {
         blackCreekEventService.addUserToEvent(eventId, userId);
         log.info("User was added to event with id {}", eventId);
-        return "redirect:/events/" + eventId;
+        return "redirect:/events";
     }
 
     @PostMapping("/{eventId}/setResponsiblePerson")
     public String setResponsiblePerson(@PathVariable Long eventId, @RequestParam Long userId) {
         blackCreekEventService.setResponsibleUserToEvent(eventId, userId);
         log.info("Responsible user was added to event with id {}", eventId);
-        return "redirect:/events/" + eventId;
+        return "redirect:/events";
     }
 
     @PostMapping("/{eventId}/attend")
-    public String markAttendance(@PathVariable Long eventId, @RequestParam String userLogin) {
-        blackCreekEventService.markAttendance(eventId, userLogin);
-        log.info("Event with id {} was marked as attended by user", eventId);
-        return "redirect:/events/" + eventId;
+    public String markAttendance(@PathVariable Long eventId, Principal principal) {
+        BlackCreekUser blackCreekUser = blackCreekUserService.findUserByLogin(principal.getName());
+        blackCreekEventService.addAttendeeToEvent(eventId, blackCreekUser.getUserId());
+        log.info("Event with id {} was marked as attended by current user", eventId);
+        return "redirect:/events";
     }
 
     @PostMapping("/{eventId}/unattend")
-    public String unmarkAttendance(@PathVariable Long eventId, @RequestParam String userLogin) {
-        blackCreekEventService.unmarkAttendance(eventId, userLogin);
-        log.info("Event with id {} was unmarked as attended", eventId);
-        return "redirect:/events/" + eventId;
+    public String unmarkAttendance(@PathVariable Long eventId, Principal principal) {
+        BlackCreekUser blackCreekUser = blackCreekUserService.findUserByLogin(principal.getName());
+        blackCreekEventService.removeAttendeeFromEvent(eventId, blackCreekUser.getUserId());
+        log.info("Event with id {} was unmarked as attended by current user", eventId);
+        return "redirect:/events";
     }
 
     @GetMapping("/search")
@@ -98,7 +102,7 @@ public class BlackCreekEventController {
         model.addAttribute("events", events);
         model.addAttribute("keyword", keyword);
         log.info("Found {} events by keyword {}", events.size(), keyword);
-        return "/event/events/search-results";
+        return "/event/search-results";
     }
 
     @PostMapping("/{eventId}/cancel")
@@ -109,32 +113,26 @@ public class BlackCreekEventController {
     }
 
     @PostMapping("/{eventId}/feedback")
-    public String addFeedback(@PathVariable Long eventId, @RequestParam Long userId, @RequestParam String comments, @RequestParam int rating) {
-        blackCreekEventService.addFeedback(eventId, userId, comments, rating);
+    public String addFeedback(@PathVariable Long eventId, Principal principal, @RequestParam String comments, @RequestParam int rating, Model model) {
+        BlackCreekUser blackCreekUser = blackCreekUserService.findUserByLogin(principal.getName());
+        blackCreekEventService.addFeedback(eventId, blackCreekUser.getUserId(), comments, rating);
+        model.addAttribute("reloadScript", "<script>setTimeout(function(){ window.location.reload(); }, 1000);</script>");
         return "redirect:/events/" + eventId;
     }
 
-    @GetMapping("/{eventId}/photos")
-    public String showPhotoUploadForm(@PathVariable Long eventId, Model model) {
+    @PostMapping("/{eventId}/eventPhotos")
+    public String uploadPhoto(@PathVariable Long eventId, @RequestParam("photo") MultipartFile photo, RedirectAttributes redirectAttributes) {
         BlackCreekEvent event = blackCreekEventService.findEventById(eventId);
-        model.addAttribute("event", event);
-        return "photoUploadForm";
-    }
-
-    @PostMapping("/{eventId}/photos")
-    public String uploadPhoto(@PathVariable Long eventId, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
-        if (!file.isEmpty()) {
+        if (event != null && !photo.isEmpty()) {
             try {
-                blackCreekEventService.addPhoto(eventId, file);
-                log.info("Photo was successfully added");
-                redirectAttributes.addFlashAttribute("message", "Photo uploaded successfully");
+                blackCreekEventService.addPhotoToEvent(event.getEventId(), photo);
             } catch (IOException e) {
-                log.error("Some exception occurred: {}", e.getMessage());
-                redirectAttributes.addFlashAttribute("message", "Failed to upload photo");
+                throw new RuntimeException(e);
             }
+            redirectAttributes.addFlashAttribute("successMessage", "EventPhoto uploaded successfully!");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Invalid event or file");
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to upload photo!");
         }
-        return "redirect:/events/" + eventId + "/photos";
+        return "redirect:/events/" + eventId;
     }
 }

@@ -1,21 +1,55 @@
-/* Header Styles */
-.header {
-    background: #6d4c41; /* Dark brown, reminiscent of aged wood */
-    color: #f1c40f; /* Gold for text */
-    padding: 20px;
-    text-align: center;
-    border-bottom: 3px solid #d4af37; /* Gold border */
+.sticky-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Add a shadow for a layered effect */
 }
 
-.header h1 {
-    font-family: 'Uncial Antiqua', serif;
-    font-size: 2.5em;
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
 }
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.main-content {
+    margin-top: 60px;
+    padding: 20px;
+}
+
+.header-container h1 a {
+    color: white;
+    text-decoration: none;
+}
+
 .container {
+    display: grid;
     width: 80%;
     margin: auto;
     padding: 20px;
 }
+
 button {
     background-color: #8e6e4e; /* Leather-like brown */
     color: #f1c40f; /* Gold text */
@@ -140,6 +174,160 @@ body {
     background: #45a049;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+}
+
+table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.attendee-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.attendee-list li {
+    padding: 2px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.btn.attend {
+    background-color: #4CAF50; /* Green */
+}
+
+.btn.unattend {
+    background-color: #f44336; /* Red */
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #4c4c4c;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #333;
+}
+
+.btn-view {
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn-view:hover {
+    background-color: #0056b3;
+}
+
+.btn-cancel {
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+.btn-back {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.btn-back:hover {
+    background-color: #0056b3;
+}
+
+.btn-upload {
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.btn-upload:hover {
+    background-color: #218838;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.gallery img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item {
+    flex: 1 1 calc(33.333% - 10px);
+    box-sizing: border-box;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+}
+
+.event-photo {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .form-group {
     margin-bottom: 1em;
 }
@@ -202,10 +390,18 @@ body {
     background: #45a049;
 }
 
-.footer {
-    background: #6d4c41;
-    color: #f1c40f;
-    padding: 10px;
+footer {
+    background-color: #333;
+    color: white;
     text-align: center;
-    border-top: 3px solid #d4af37;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
 }

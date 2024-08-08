@@ -26,10 +26,13 @@ public class BlackCreekUserService {
     }
 
     public BlackCreekUser saveUser(BlackCreekUser user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User must not be null");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
         UserRole userRole = userRoleRepository.findByRoleName(RoleType.ROLE_REGISTERED_USER.name());
-        if(userRole == null){
+        if (userRole == null) {
             userRole = new UserRole();
             userRole.setRoleName(RoleType.ROLE_REGISTERED_USER.name());
             userRoleRepository.save(userRole);
@@ -54,10 +57,17 @@ public class BlackCreekUserService {
     }
 
     public BlackCreekUser findUserById(Long id) {
-        return blackCreekUserRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found"));
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("ID must be a positive number");
+        }
+        return blackCreekUserRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    public boolean isLoginTaken(String login){
+    public BlackCreekUser findUserByLogin(String login) {
+        return blackCreekUserRepository.findByLogin(login).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    public boolean isLoginTaken(String login) {
         return blackCreekUserRepository.findByLogin(login).isPresent();
     }
 }

@@ -19,14 +19,14 @@ public class BookingService {
     }
 
     public List<Booking> getBookingsForEvent(Long eventId) {
-        if (eventId == null) {
+        if (eventId == null || eventId < 0) {
             throw new ResourceNotFoundException("Event not found");
         }
         return bookingsRepository.findByEventId(eventId);
     }
 
     public List<Booking> getBookingsForUser(Long userId) {
-        if (userId == null) {
+        if (userId == null || userId < 0) {
             throw new ResourceNotFoundException("User not found");
         }
         return bookingsRepository.findByUserId(userId);

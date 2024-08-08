@@ -5,12 +5,11 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header>
+<header class="sticky-header">
     <div th:replace="~{./fragments.html :: header}"></div>
 </header>
 <div th:if="${developmentPlans.empty}">
     <p>No development plans available at the moment.</p>
-    <a th:href="@{/development_plans/new}" class="btn btn-success">Add Development Plan</a>
 </div>
 <div th:unless="${developmentPlans.empty}">
     <div class="container">
@@ -24,14 +23,14 @@
             </thead>
             <tbody>
             <tr th:each="plan : ${developmentPlans}">
-                <td th:text="${plan.name}">Plan Name</td>
-                <td th:text="${plan.description}">Description</td>
+                <td th:text="${plan.developmentPlanName}">Plan Name</td>
+                <td th:text="${plan.developmentPlanDescription}">Description</td>
             </tr>
             </tbody>
         </table>
-        <a th:href="@{/development_plans/new}" class="btn btn-success">Add Development Plan</a>
     </div>
 </div>
+<a th:href="@{/development_plans/new}" class="btn btn-success">Add Development Plan</a>
 <footer>
     <div th:replace="~{./fragments.html :: footer}"></div>
 </footer>

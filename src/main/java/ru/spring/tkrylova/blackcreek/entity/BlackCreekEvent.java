@@ -36,7 +36,7 @@ public class BlackCreekEvent {
     @Column(name = "event_start_date")
     private LocalDate eventStartDate;
 
-    @Future
+    @Future(message = "Data end should be in future")
     @Column(name = "event_end_date")
     private LocalDate eventEndDate;
 
@@ -94,7 +94,7 @@ public class BlackCreekEvent {
     private List<Feedback> feedbacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Photo> photos = new ArrayList<>();
+    private List<EventPhoto> eventPhotos = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at",
