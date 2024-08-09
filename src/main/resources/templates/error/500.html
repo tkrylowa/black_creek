@@ -5,25 +5,28 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<header class="sticky-header">
-    <div class="header-content">
-        <h1>Internal Server Error</h1>
-    </div>
-</header>
-<main>
-    <div class="error-container">
-        <h2>Oops! Something went wrong on our side.</h2>
-        <p>An unexpected error occurred. Please try again later.</p>
-        <div>
-            <span><strong>Message</strong></span>
-            <span th:text="${errorMessage}"></span>
+<div class="container">
+    <header class="sticky-header">
+        <div class="header-content">
+            <h1>Internal Server Error</h1>
         </div>
-        <div>
-            <span><strong>Full stack trace</strong></span>
-            <span th:text="${errorTrace}"></span>
+    </header>
+    <main>
+        <div class="error-container">
+            <h2>Oops! Something went wrong on our side.</h2>
+            <p>An unexpected error occurred. Please try again later.</p>
+            <div>
+                <span><strong>Message</strong></span>
+                <span th:text="${errorMessage}"></span>
+            </div>
+            <div>
+                <span><strong>Full stack trace</strong></span>
+                <span th:text="${errorTrace}"></span>
+            </div>
+            <a href="/" class="btn">Go to Homepage</a>
         </div>
-        <a href="/" class="btn">Go to Homepage</a>
-    </div>
-</main>
+    </main>
+    <div th:replace="~{./fragments.html :: footer}"></div>
+</div>
 </body>
 </html>

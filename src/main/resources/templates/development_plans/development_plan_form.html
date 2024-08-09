@@ -5,28 +5,26 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header class="sticky-header">
+<div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
-</header>
-<main class="main-content">
-    <div class="container">
-        <h1 class="my-4">Add Development Plan</h1>
-        <form th:action="@{/development_plans/add}" th:object="${developmentPlan}" method="post" class="form">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" th:field="*{developmentPlanName}" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" th:field="*{developmentPlanDescription}" class="form-control"/>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
-        <a th:href="@{/development_plans}" class="btn btn-back">Back to Development Plans</a>
-    </div>
-</main>
-<footer>
+    <main class="main-content">
+        <div class="container">
+            <h1 class="my-4">Add Development Plan</h1>
+            <form th:action="@{/development_plans/add}" th:object="${developmentPlan}" method="post" class="form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" th:field="*{developmentPlanName}" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" th:field="*{developmentPlanDescription}" class="form-control"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+            <a th:href="@{/development_plans}" class="btn btn-back">Back to Development Plans</a>
+        </div>
+    </main>
     <div th:replace="~{./fragments.html :: footer}"></div>
-</footer>
+</div>
 </body>
 </html>

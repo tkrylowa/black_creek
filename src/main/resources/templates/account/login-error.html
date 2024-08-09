@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login Error</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<header class="sticky-header">
+<div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
-</header>
-<main class="main-content">
-    <h2>Login Error</h2>
-    <p style="color: red;">Invalid username or password. Please try again.</p>
-    <div>
-        <a th:href="@{/login}">Back to Login</a>
-    </div>
-</main>
-<footer>
+    <main class="main-content">
+        <h2>Login Error</h2>
+        <p style="color: red;">Invalid username or password. Please try again.</p>
+        <div>
+            <a th:href="@{/login}">Back to Login</a>
+        </div>
+    </main>
     <div th:replace="~{./fragments.html :: footer}"></div>
-</footer>
+</div>
 </body>
 </html>

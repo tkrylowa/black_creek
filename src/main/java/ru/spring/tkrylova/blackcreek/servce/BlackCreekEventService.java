@@ -206,6 +206,23 @@ public class BlackCreekEventService {
         blackCreekEventRepository.save(event);
     }
 
+    public void updateEvent(Long eventId, BlackCreekEvent updatedEvent) {
+        BlackCreekEvent existingEvent = blackCreekEventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+
+        existingEvent.setEventName(updatedEvent.getEventName());
+        existingEvent.setEventStartDate(updatedEvent.getEventStartDate());
+        existingEvent.setEventEndDate(updatedEvent.getEventEndDate());
+        existingEvent.setEventDescription(updatedEvent.getEventDescription());
+        existingEvent.setEventCapacity(updatedEvent.getEventCapacity());
+        existingEvent.setFree(updatedEvent.isFree());
+        existingEvent.setCancelled(updatedEvent.isCancelled());
+        existingEvent.setCost(updatedEvent.getCost());
+        existingEvent.setResponsibleUserId(updatedEvent.getResponsibleUserId());
+
+        blackCreekEventRepository.save(existingEvent);
+    }
+
     private void verifyIdNotNullAndPositive(Long id, String typeOfId) {
         if (id == null) {
             throw new ResourceNotFoundException(String.format("%s id is null", typeOfId));

@@ -6,60 +6,59 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header class="sticky-header">
+<div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
-</header>
-<main class="main-content">
-    <div class="register-container">
-        <div class="register-box">
-            <h2>Register</h2>
-            <form th:action="@{/register}" th:object="${user}" method="post">
-                <div class="input-group">
-                    <label for="login">Login:</label>
-                    <input type="text" id="login" th:field="*{login}"/>
-                    <div th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Login Error</div>
+    <main class="main-content">
+        <div class="register-container">
+            <div class="register-box">
+                <h2>Register</h2>
+                <form th:action="@{/register}" th:object="${user}" method="post">
+                    <div class="input-group">
+                        <label for="login">Login:</label>
+                        <input type="text" id="login" th:field="*{login}"/>
+                        <div th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Login Error</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" th:field="*{email}"/>
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" th:field="*{firstName}"/>
+                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">First Name Error</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" th:field="*{lastName}"/>
+                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Last Name Error</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required th:field="*{password}">
+                    </div>
+                    <div class="input-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required
+                               th:field="*{confirmPassword}">
+                    </div>
+                    <div class="input-group">
+                        <button type="submit">Register</button>
+                    </div>
+                    <div th:if="${error}" class="error">
+                        <p th:text="${error}">Error message</p>
+                    </div>
+                    <div th:if="${message}" class="message">
+                        <p th:text="${message}">Success message</p>
+                    </div>
+                </form>
+                <div class="login-link">
+                    <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
                 </div>
-                <div class="input-group">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" th:field="*{email}"/>
-                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>
-                </div>
-                <div class="input-group">
-                    <label for="firstName">First Name:</label>
-                    <input type="text" id="firstName" th:field="*{firstName}"/>
-                    <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">First Name Error</div>
-                </div>
-                <div class="input-group">
-                    <label for="lastName">Last Name:</label>
-                    <input type="text" id="lastName" th:field="*{lastName}"/>
-                    <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Last Name Error</div>
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required th:field="*{password}">
-                </div>
-                <div class="input-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required th:field="*{confirmPassword}">
-                </div>
-                <div class="input-group">
-                    <button type="submit">Register</button>
-                </div>
-                <div th:if="${error}" class="error">
-                    <p th:text="${error}">Error message</p>
-                </div>
-                <div th:if="${message}" class="message">
-                    <p th:text="${message}">Success message</p>
-                </div>
-            </form>
-            <div class="login-link">
-                <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
             </div>
         </div>
-    </div>
-</main>
-<footer>
+    </main>
     <div th:replace="~{./fragments.html :: footer}"></div>
-</footer>
+</div>
 </body>
 </html>

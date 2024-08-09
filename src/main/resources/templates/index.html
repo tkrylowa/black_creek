@@ -5,17 +5,15 @@
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<header class="sticky-header">
+<div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
-</header>
-<main class="main-content">
-    <div>
-        <h2>Welcome to Medieval Park!</h2>
-        <p>Discover the wonders of the medieval era through our interactive events</p>
-    </div>
-</main>
-<footer>
+    <main class="main-content">
+        <div>
+            <h2>Welcome to Medieval Park!</h2>
+            <p>Discover the wonders of the medieval era through our interactive events</p>
+        </div>
+    </main>
     <div th:replace="~{./fragments.html :: footer}"></div>
-</footer>
+</div>
 </body>
 </html>

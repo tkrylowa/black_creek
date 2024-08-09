@@ -135,4 +135,17 @@ public class BlackCreekEventController {
         }
         return "redirect:/events/" + eventId;
     }
+
+    @PostMapping("/{eventId}/update")
+    public String updateEvent(@PathVariable("eventId") Long eventId,
+                              @ModelAttribute("event") BlackCreekEvent event,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            blackCreekEventService.updateEvent(eventId, event);
+            redirectAttributes.addFlashAttribute("successMessage", "Event updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update the event. Please try again.");
+        }
+        return "redirect:/event/" + eventId + "/view";
+    }
 }

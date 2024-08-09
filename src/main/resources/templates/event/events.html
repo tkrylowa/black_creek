@@ -6,84 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<header class="sticky-header">
+<div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
-</header>
-<main class="main-content">
-    <div th:if="${events.empty}">
-        <p>No events available at the moment.</p>
-    </div>
-    <div th:unless="${events.empty}">
-        <div class="events-container">
-            <h1 class="my-4">Events</h1>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Start date</th>
-                    <th>End date</th>
-                    <th>Capacity</th>
-                    <th>Attendees</th>
-                    <th>Mark attendees</th>
-                    <th>Unmark attendees</th>
-                    <th>View details of event</th>
-                    <th>Cancel event</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="event : ${events}" th:if="${!event.isCancelled}">
-                    <td th:text="${event.eventName}">Event Name</td>
-                    <td th:text="${event.eventDescription}">Description</td>
-                    <td th:text="${event.eventStartDate}">Start date</td>
-                    <td th:text="${event.eventEndDate}">End date</td>
-                    <td th:text="${event.eventCapacity}">Capacity</td>
-                    <td>
-                        <div th:if="${event.attendees.size() > 0}">
-                            <ul class="attendee-list">
-                                <li th:each="attendee : ${event.attendees}">
-                                    <span th:text="${attendee.login}">Attendee Name</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div th:if="${event.attendees.size() == 0}">
-                            <p>No attendees yet. Be the first to attend!</p>
-                        </div>
-                    </td>
-                    <td>
-                        <div th:if="${#lists.contains(event.attendees, #authentication.name)}">
-                            <button type="button" class="btn" disabled>Already Attending</button>
-                        </div>
-                        <div th:unless="${#lists.contains(event.attendees, #authentication.name)}">
-                            <form th:action="@{/events/{eventId}/attend(eventId=${event.eventId})}" method="post">
-                                <button type="submit" class="btn attend">Attend</button>
-                            </form>
-                        </div>
-                    </td>
-                    <td>
-                        <form th:action="@{/events/{eventId}/unattend(eventId=${event.eventId})}"
-                              method="post">
-                            <button type="submit" class="btn unattend">Unattend</button>
-                        </form>
-                    </td>
-                    <td>
-                        <a th:href="@{/events/{eventId}(eventId=${event.eventId})}" class="btn btn-view">View</a>
-                    </td>
-                    <td>
-                        <form th:action="@{/events/{eventId}/cancel(eventId=${event.eventId})}"
-                              method="post">
-                            <button type="submit" class="btn cancel">Cancel event</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <main class="main-content">
+        <div th:if="${events.empty}">
+            <p>No events available at the moment.</p>
         </div>
-    </div>
-    <a th:href="@{/events/new}" class="btn btn-success">Add a new Event</a>
-</main>
-<footer>
+        <div th:unless="${events.empty}">
+            <div class="events-container">
+                <h1 class="my-4">Events</h1>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Start date</th>
+                        <th>End date</th>
+                        <th>Capacity</th>
+                        <th>Attendees</th>
+                        <th>Mark attendees</th>
+                        <th>Unmark attendees</th>
+                        <th>View details of event</th>
+                        <th>Cancel event</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="event : ${events}" th:if="${!event.isCancelled}">
+                        <td th:text="${event.eventName}">Event Name</td>
+                        <td th:text="${event.eventDescription}">Description</td>
+                        <td th:text="${event.eventStartDate}">Start date</td>
+                        <td th:text="${event.eventEndDate}">End date</td>
+                        <td th:text="${event.eventCapacity}">Capacity</td>
+                        <td>
+                            <div th:if="${event.attendees.size() > 0}">
+                                <ul class="attendee-list">
+                                    <li th:each="attendee : ${event.attendees}">
+                                        <span th:text="${attendee.login}">Attendee Name</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div th:if="${event.attendees.size() == 0}">
+                                <p>No attendees yet. Be the first to attend!</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div th:if="${#lists.contains(event.attendees, #authentication.name)}">
+                                <button type="button" class="btn" disabled>Already Attending</button>
+                            </div>
+                            <div th:unless="${#lists.contains(event.attendees, #authentication.name)}">
+                                <form th:action="@{/events/{eventId}/attend(eventId=${event.eventId})}" method="post">
+                                    <button type="submit" class="btn attend">Attend</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <form th:action="@{/events/{eventId}/unattend(eventId=${event.eventId})}"
+                                  method="post">
+                                <button type="submit" class="btn unattend">Unattend</button>
+                            </form>
+                        </td>
+                        <td>
+                            <a th:href="@{/events/{eventId}(eventId=${event.eventId})}" class="btn btn-view">View</a>
+                        </td>
+                        <td>
+                            <form th:action="@{/events/{eventId}/cancel(eventId=${event.eventId})}"
+                                  method="post">
+                                <button type="submit" class="btn cancel">Cancel event</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a th:href="@{/events/new}" class="btn-add-new">Add a new Event</a>
+        <form method="get" th:action="@{/events/search}" id="search-event-form">
+            <label>
+                <input type="text" name="keyword" id="search-input" placeholder="Search events..." required>
+            </label>
+            <button type="submit" id="search-button">Search</button>
+        </form>
+    </main>
     <div th:replace="~{./fragments.html :: footer}"></div>
-</footer>
+</div>
 </body>
 </html>
