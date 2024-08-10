@@ -488,4 +488,30 @@ public class BlackCreekEventServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.setResponsibleUserToEvent(1L, invalidId));
     }
+
+    @Test
+    void addAttendeeToEvent_ShouldThrowException_WhenCapacityReached() {
+        BlackCreekEvent event = new BlackCreekEvent();
+        event.setEventId(3L);
+        event.setAttendees(new HashSet<>());
+        event.setEventName("event with capacity");
+        event.setEventCapacity(2);
+
+        BlackCreekUser user1 = new BlackCreekUser();
+        user1.setLogin("user1");
+        user1.setUserId(2L);
+        BlackCreekUser user2 = new BlackCreekUser();
+        user1.setLogin("user2");
+        user1.setUserId(3L);
+        BlackCreekUser user3 = new BlackCreekUser();
+        user1.setLogin("user3");
+        user1.setUserId(4L);
+
+        event.getAttendees().add(user1);
+        event.getAttendees().add(user2);
+
+        when(blackCreekEventRepository.findById(event.getEventId())).thenReturn(Optional.of(event));
+        when(blackCreekUserRepository.findById(user3.getUserId())).thenReturn(Optional.of(user3));
+        assertThrows(IllegalStateException.class, () -> blackCreekEventService.addAttendeeToEvent(event.getEventId(), user3.getUserId()));
+    }
 }

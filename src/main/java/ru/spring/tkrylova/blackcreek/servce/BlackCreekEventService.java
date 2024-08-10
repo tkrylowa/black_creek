@@ -79,6 +79,9 @@ public class BlackCreekEventService {
         verifyIdNotNullAndPositive(userId, "User");
         verifyIdNotNullAndPositive(eventId, "Event");
         BlackCreekEvent event = findEventById(eventId);
+        if (event.getAttendees().size() >= event.getEventCapacity()) {
+            throw new IllegalStateException("Event has reached its maximum capacity.");
+        }
         BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         event.getUsers().add(user);
         BlackCreekEvent updatedEvent = blackCreekEventRepository.save(event);
@@ -117,6 +120,9 @@ public class BlackCreekEventService {
         verifyIdNotNullAndPositive(eventId, "Event");
         BlackCreekEvent event = blackCreekEventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        if (event.getAttendees().size() >= event.getEventCapacity()) {
+            throw new IllegalStateException("Event has reached its maximum capacity.");
+        }
         BlackCreekUser user = blackCreekUserRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 

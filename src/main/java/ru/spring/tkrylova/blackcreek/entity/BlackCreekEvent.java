@@ -60,8 +60,7 @@ public class BlackCreekEvent {
     private Long responsibleUserId;
 
     @Column(name = "is_free",
-            insertable = false,
-            columnDefinition = "BOOLEAN DEFAULT false")
+            columnDefinition = "BOOLEAN DEFAULT true")
     private boolean isFree;
 
     @Column(name = "is_cancelled",

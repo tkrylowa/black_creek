@@ -12,6 +12,12 @@
         <div th:if="${events.empty}">
             <p>No events available at the moment.</p>
         </div>
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
         <div th:unless="${events.empty}">
             <div class="events-container">
                 <h1 class="my-4">Events</h1>
@@ -79,7 +85,9 @@
                 </table>
             </div>
         </div>
-        <a th:href="@{/events/new}" class="btn-add-new">Add a new Event</a>
+        <div>
+            <a th:href="@{/events/new}" class="btn-add-new">Add a new Event</a>
+        </div>
         <form method="get" th:action="@{/events/search}" id="search-event-form">
             <label>
                 <input type="text" name="keyword" id="search-input" placeholder="Search events..." required>

@@ -9,6 +9,13 @@
 <div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
     <main class="main-content">
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
         <div class="event-container">
             <form action="#" th:action="@{/event/{eventId}/update(eventId=${event.eventId})}" method="post">
                 <table class="event-details-table">
@@ -172,8 +179,9 @@
                         onclick="return confirm('Are you sure you want to cancel this event?');">Cancel event
                 </button>
             </form>
-
-            <a href="#" th:href="@{/events}" class="btn btn-back">Back to Events</a>
+            <div>
+                <a th:href="@{/events}" class="btn-back">Back to Events</a>
+            </div>
         </div>
     </main>
     <div th:replace="~{./fragments.html :: footer}"></div>

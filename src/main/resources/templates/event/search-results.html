@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
 <head>
     <title>Search Results</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
@@ -8,13 +9,24 @@
 <div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
     <main class="main-content">
-        <div class="container">
+        <div>
             <h1>Search Results for "<span th:text="${keyword}"></span>"</h1>
-            <ul>
-                <li th:each="event : ${events}">
-                    <a th:href="@{events/{eventId}(eventId=${event.eventId})}" th:text="${event.eventName}">Event Name</a>
-                </li>
-            </ul>
+            <div th:if="${events.empty}">
+                <p>No events found.</p>
+            </div>
+            <div th:unless="${events.empty}">
+                <div class="events-container">
+                    <ul id="search-results">
+                        <li th:each="event : ${events}">
+                            <a th:href="@{/events/{eventId}(eventId=${event.eventId})}" th:text="${event.eventName}">Event
+                                Name</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div>
+            <a th:href="@{/events}" class="btn-back">Back to Events</a>
         </div>
     </main>
     <div th:replace="~{./fragments.html :: footer}"></div>

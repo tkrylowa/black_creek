@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 import ru.spring.tkrylova.blackcreek.entity.Feedback;
+import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.EventPhotoRepository;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekUserService;
@@ -42,13 +43,15 @@ public class BlackCreekEventController {
 
     @GetMapping("/new")
     public String showEventForm(Model model) {
-        model.addAttribute("event", new BlackCreekEvent());
+        BlackCreekEvent event = new BlackCreekEvent();
+        event.setFree(true);
+        model.addAttribute("event", event);
         return "event/event_form";
     }
 
     @PostMapping("/add")
-    public String createEvent(BlackCreekEvent event, Model model) {
-        model.addAttribute("event", new BlackCreekUser());
+    public String createEvent(@ModelAttribute("event")BlackCreekEvent event, Model model) {
+//        model.addAttribute("event", event);
         BlackCreekEvent savedEvent = blackCreekEventService.saveEvent(event);
         log.info("New event with id {} was successfully created", savedEvent.getEventId());
         model.addAttribute("reloadScript", "<script>setTimeout(function(){ window.location.reload(); }, 1000);</script>");
@@ -74,17 +77,28 @@ public class BlackCreekEventController {
     }
 
     @PostMapping("/{eventId}/setResponsiblePerson")
-    public String setResponsiblePerson(@PathVariable Long eventId, @RequestParam Long userId) {
-        blackCreekEventService.setResponsibleUserToEvent(eventId, userId);
-        log.info("Responsible user was added to event with id {}", eventId);
+    public String setResponsiblePerson(@PathVariable Long eventId, @RequestParam Long userId, RedirectAttributes redirectAttributes) {
+        try {
+            blackCreekEventService.setResponsibleUserToEvent(eventId, userId);
+            log.info("Responsible user was added to event with id {}", eventId);
+            redirectAttributes.addFlashAttribute("successMessage", "Successfully registered for the event.");
+        } catch (IllegalStateException | ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+
         return "redirect:/events";
     }
 
     @PostMapping("/{eventId}/attend")
-    public String markAttendance(@PathVariable Long eventId, Principal principal) {
+    public String markAttendance(@PathVariable Long eventId, Principal principal, RedirectAttributes redirectAttributes) {
         BlackCreekUser blackCreekUser = blackCreekUserService.findUserByLogin(principal.getName());
-        blackCreekEventService.addAttendeeToEvent(eventId, blackCreekUser.getUserId());
-        log.info("Event with id {} was marked as attended by current user", eventId);
+        try {
+            blackCreekEventService.addAttendeeToEvent(eventId, blackCreekUser.getUserId());
+            log.info("Event with id {} was marked as attended by current user", eventId);
+            redirectAttributes.addFlashAttribute("successMessage", "Successfully registered for the event.");
+        } catch (IllegalStateException | ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/events";
     }
 

@@ -17,33 +17,62 @@
                         <input type="text" th:field="*{eventName}" class="form-control"/>
                     </label>
                 </div>
+
+                <div class="form-group">
+                    <label for="eventTypeId">Event Type</label>
+                    <select id="eventTypeId" th:field="*{eventTypeId}" class="form-control">
+                        <option th:each="type : ${eventTypes}" th:value="${type.id}" th:text="${type.name}">Event Type
+                        </option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Description</label>
                     <label>
                         <input type="text" th:field="*{eventDescription}" class="form-control"/>
                     </label>
                 </div>
+
                 <div class="form-group">
                     <label>Start date</label>
                     <label>
                         <input type="date" th:field="*{eventStartDate}" class="form-control"/>
                     </label>
                 </div>
+
                 <div class="form-group">
                     <label>End date</label>
                     <label>
                         <input type="date" th:field="*{eventEndDate}" class="form-control"/>
                     </label>
                 </div>
+
                 <div class="form-group">
                     <label>Event capacity (how mane people)</label>
                     <label>
                         <input type="number" th:field="*{eventCapacity}" class="form-control" value="3"/>
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
+
+                <div class="form-group">
+                    <label for="cost">Cost</label>
+                    <input type="number" step="0.01" id="cost" th:field="*{cost}" class="form-control" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="responsibleUserId">Responsible User</label>
+                    <select id="responsibleUserId" th:field="*{responsibleUserId}" class="form-control">
+                        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.login}">Select User</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
             </form>
-            <a th:href="@{/events}" class="btn btn-secondary mt-3">Back to Events</a>
+            <div>
+                <a th:href="@{/events}" class="btn-back">Back to Events</a>
+            </div>
             <div th:utext="${reloadScript}"></div>
         </div>
     </main>
