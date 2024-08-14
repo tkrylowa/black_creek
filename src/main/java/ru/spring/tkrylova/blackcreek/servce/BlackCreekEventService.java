@@ -177,12 +177,11 @@ public class BlackCreekEventService {
         verifyIdNotNullAndPositive(eventId, "Event");
         BlackCreekEvent event = findEventById(eventId);
         BlackCreekUser user = blackCreekUserRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Feedback feedback = Feedback.builder()
-                .event(event)
-                .user(user)
-                .comments(comments)
-                .rating(rating)
-                .build();
+        Feedback feedback = new Feedback();
+        feedback.setEvent(event);
+        feedback.setUser(user);
+        feedback.setComments(comments);
+        feedback.setRating(rating);
         return feedbackRepository.save(feedback);
     }
 

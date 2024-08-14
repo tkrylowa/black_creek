@@ -10,7 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -39,7 +38,7 @@ public class Place {
 
     @Column(name = "created_by",
             updatable = false,
-            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT current_user")
+            columnDefinition = "VARCHAR(50) NOT NULL DEFAULT 'current_user'")
     private String createdBy;
 
     @UpdateTimestamp
@@ -53,5 +52,5 @@ public class Place {
     @Column(name = "is_active",
             columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE",
             insertable = false)
-    private boolean isActive;
+    private boolean isActive = true;
 }

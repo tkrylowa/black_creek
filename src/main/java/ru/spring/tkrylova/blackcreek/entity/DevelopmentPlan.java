@@ -9,7 +9,6 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -52,5 +51,5 @@ public class DevelopmentPlan {
     @Column(name = "is_active",
             columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE",
             insertable = false)
-    private boolean isActive;
+    private boolean isActive = true;
 }

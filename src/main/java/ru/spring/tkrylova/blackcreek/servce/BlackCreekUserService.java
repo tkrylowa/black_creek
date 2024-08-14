@@ -1,6 +1,5 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
@@ -16,13 +15,12 @@ import java.util.List;
 public class BlackCreekUserService {
     private final BlackCreekUserRepository blackCreekUserRepository;
     private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public BlackCreekUserService(BlackCreekUserRepository blackCreekUserRepository, UserRoleRepository userRoleRepository) {
+    public BlackCreekUserService(BlackCreekUserRepository blackCreekUserRepository, UserRoleRepository userRoleRepository, PasswordEncoder passwordEncoder) {
         this.blackCreekUserRepository = blackCreekUserRepository;
         this.userRoleRepository = userRoleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public BlackCreekUser saveUser(BlackCreekUser user) {

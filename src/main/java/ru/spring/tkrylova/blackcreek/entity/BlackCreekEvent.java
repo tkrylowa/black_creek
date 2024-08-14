@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -61,7 +60,7 @@ public class BlackCreekEvent {
 
     @Column(name = "is_free",
             columnDefinition = "BOOLEAN DEFAULT true")
-    private boolean isFree;
+    private boolean isFree = true;
 
     @Column(name = "is_cancelled",
             insertable = false,
@@ -89,10 +88,10 @@ public class BlackCreekEvent {
     )
     private Set<BlackCreekUser> attendees = new HashSet<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.MERGE)
     private List<Feedback> feedbacks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<EventPhoto> eventPhotos = new ArrayList<>();
 
     @CreatedDate

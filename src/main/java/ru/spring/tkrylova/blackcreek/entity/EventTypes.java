@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -28,5 +27,5 @@ public class EventTypes {
     @Column(name = "is_active",
             columnDefinition = "BOOLEAN NOT NULL DEFAULT TRUE",
             insertable = false)
-    private boolean isActive;
+    private boolean isActive = true;
 }

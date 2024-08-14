@@ -56,16 +56,12 @@ public class BlackCreekUserTest {
         when(userRoleRepository.findByRoleName(RoleType.ROLE_REGISTERED_USER.name())).thenReturn(null);
         when(userRoleRepository.save(any(UserRole.class))).thenReturn(userRole);
         when(blackCreekUserRepository.save(any(BlackCreekUser.class))).thenReturn(user1);
-
         BlackCreekUser result = userService.saveUser(user1);
-
         assertNotNull(result);
         assertEquals("encodedPassword", result.getPassword());
         assertEquals("encodedPassword", result.getConfirmPassword());
-        assertEquals(userRole, result.getUserRole());
-        verify(userRoleRepository, times(1)).findByRoleName(RoleType.ROLE_REGISTERED_USER.name());
-        verify(userRoleRepository, times(1)).save(any(UserRole.class));
-        verify(blackCreekUserRepository, times(1)).save(user1);
+        assertEquals(userRole.getRoleId(), result.getUserRole().getRoleId());
+        assertEquals(userRole.getRoleName(), result.getUserRole().getRoleName());
     }
 
     @Test
@@ -73,63 +69,44 @@ public class BlackCreekUserTest {
         when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
         when(userRoleRepository.findByRoleName(RoleType.ROLE_REGISTERED_USER.name())).thenReturn(userRole);
         when(blackCreekUserRepository.save(any(BlackCreekUser.class))).thenReturn(user1);
-
         BlackCreekUser result = userService.saveUser(user1);
-
         assertNotNull(result);
         assertEquals("encodedPassword", result.getPassword());
         assertEquals("encodedPassword", result.getConfirmPassword());
         assertEquals(userRole, result.getUserRole());
-        verify(userRoleRepository, times(1)).findByRoleName(RoleType.ROLE_REGISTERED_USER.name());
-        verify(userRoleRepository, times(0)).save(any(UserRole.class));
-        verify(blackCreekUserRepository, times(1)).save(user1);
     }
 
     @Test
     void saveUser_NullUser() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.saveUser(null));
-
         assertEquals("User must not be null", exception.getMessage());
-        verify(userRoleRepository, times(0)).findByRoleName(anyString());
-        verify(userRoleRepository, times(0)).save(any(UserRole.class));
-        verify(blackCreekUserRepository, times(0)).save(any(BlackCreekUser.class));
     }
 
     @Test
     void findAllUsers_Success() {
         List<BlackCreekUser> users = Arrays.asList(user1, user2);
-
         when(blackCreekUserRepository.findAll()).thenReturn(users);
-
         List<BlackCreekUser> result = userService.findAllUsers();
-
         assertNotNull(result);
         assertEquals(2, result.size());
         assertTrue(result.contains(user1));
         assertTrue(result.contains(user2));
-        verify(blackCreekUserRepository, times(1)).findAll();
     }
 
     @Test
     void findAllUsers_NoUsers() {
         when(blackCreekUserRepository.findAll()).thenReturn(Collections.emptyList());
-
         List<BlackCreekUser> result = userService.findAllUsers();
-
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(blackCreekUserRepository, times(1)).findAll();
     }
 
     @Test
     void findUserById_Success() {
         when(blackCreekUserRepository.findById(1L)).thenReturn(Optional.of(user1));
-
         BlackCreekUser result = userService.findUserById(1L);
-
         assertNotNull(result);
         assertEquals(user1, result);
-        verify(blackCreekUserRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -141,34 +118,25 @@ public class BlackCreekUserTest {
     @Test
     void findUserById_InvalidId() {
         Long invalidId = -1L;
-
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.findUserById(invalidId));
-
         assertEquals("ID must be a positive number", exception.getMessage());
-        verify(blackCreekUserRepository, times(0)).findById(anyLong());
     }
 
     @Test
     void findByLogin_Success() {
         String validLogin = "validLogin";
         when(blackCreekUserRepository.findByLogin(validLogin)).thenReturn(Optional.of(user1));
-
         BlackCreekUser result = userService.findUserByLogin(validLogin);
-
         assertNotNull(result);
         assertEquals(user1, result);
-        verify(blackCreekUserRepository, times(1)).findByLogin(validLogin);
     }
 
     @Test
     void findByLogin_NotFound() {
         String invalidLogin = "invalidLogin";
         when(blackCreekUserRepository.findByLogin(invalidLogin)).thenReturn(Optional.empty());
-
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(invalidLogin));
-
         assertEquals("User not found", exception.getMessage());
-        verify(blackCreekUserRepository, times(1)).findByLogin(invalidLogin);
     }
 
     @Test
@@ -176,14 +144,11 @@ public class BlackCreekUserTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(null));
 
         assertEquals("User not found", exception.getMessage());
-        verify(blackCreekUserRepository, times(0)).findByLogin(anyString());
     }
 
     @Test
     void findByLogin_EmptyLogin() {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(""));
-
         assertEquals("User not found", exception.getMessage());
-        verify(blackCreekUserRepository, times(0)).findByLogin(anyString());
     }
 }

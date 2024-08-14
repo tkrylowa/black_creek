@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,5 +25,5 @@ public class EventMedia {
 
     @ManyToOne(targetEntity = BlackCreekEvent.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    private Long event_id;
+    private Long eventId;
 }

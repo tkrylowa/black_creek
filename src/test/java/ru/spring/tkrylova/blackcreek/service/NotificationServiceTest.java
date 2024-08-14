@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
+import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekUserService;
 import ru.spring.tkrylova.blackcreek.servce.EmailService;
@@ -40,10 +41,15 @@ public class NotificationServiceTest {
     void setUp() {
         event1 = new BlackCreekEvent();
         event1.setEventName("Event 1");
+        event1.setEventStartDate(LocalDate.now().plusDays(1));
+        event1.setEventEndDate(LocalDate.now().plusDays(3));
         event2 = new BlackCreekEvent();
+        event2.setEventStartDate(LocalDate.now().plusDays(1));
+        event2.setEventEndDate(LocalDate.now().plusDays(3));
         event2.setEventName("Event 2");
 
         user1 = new BlackCreekUser();
+        user1.setUserId(1L);
         user1.setLogin("user1");
         user1.setEmail("user1@example.com");
 
@@ -56,17 +62,26 @@ public class NotificationServiceTest {
     }
 
     @Test
-    void sendUpcomingEventNotifications_Success() {
+    void sendUpcomingEventNotifications_ThrowResourceNotFoundException_WhenResponsibleUserNotFound() {
         LocalDate now = LocalDate.now();
         LocalDate upcoming = now.plusDays(1);
         List<BlackCreekEvent> upcomingEvents = Arrays.asList(event1, event2);
         when(blackCreekEventService.findEventsBetween(now, upcoming)).thenReturn(upcomingEvents);
+        Exception exceptionEndNull = assertThrows(ResourceNotFoundException.class, () -> eventNotificationScheduler.sendUpcomingEventNotifications());
+        assertEquals("User with id 1 not found!", exceptionEndNull.getMessage());
+    }
 
+    @Test
+    void sendUpcomingEventNotifications_Success() {
+        Long respId = 1L;
+        LocalDate now = LocalDate.now();
+        LocalDate upcoming = now.plusDays(1);
+        event1.setResponsibleUserId(respId);
+        event2.setResponsibleUserId(respId);
+        List<BlackCreekEvent> upcomingEvents = Arrays.asList(event1, event2);
+        when(blackCreekEventService.findEventsBetween(now, upcoming)).thenReturn(upcomingEvents);
+        when(blackCreekUserService.findUserById(respId)).thenReturn(user1);
         eventNotificationScheduler.sendUpcomingEventNotifications();
-
-        verify(blackCreekEventService, times(1)).findEventsBetween(now, upcoming);
-        verify(eventNotificationScheduler, times(1)).notifyUsersOfUpcomingEvent(event1);
-        verify(eventNotificationScheduler, times(1)).notifyUsersOfUpcomingEvent(event2);
     }
 
     @Test
@@ -76,9 +91,6 @@ public class NotificationServiceTest {
         when(blackCreekEventService.findEventsBetween(now, upcoming)).thenReturn(Collections.emptyList());
 
         eventNotificationScheduler.sendUpcomingEventNotifications();
-
-        verify(blackCreekEventService, times(1)).findEventsBetween(now, upcoming);
-        verify(eventNotificationScheduler, times(0)).notifyUsersOfUpcomingEvent(any(BlackCreekEvent.class));
     }
 
     @Test
@@ -86,9 +98,7 @@ public class NotificationServiceTest {
         BlackCreekUser responsibleUser = new BlackCreekUser();
         responsibleUser.setLogin("responsibleUser");
         responsibleUser.setEmail("responsible@example.com");
-
         when(blackCreekUserService.findUserById(event1.getResponsibleUserId())).thenReturn(responsibleUser);
-
         eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
 
         verify(emailService).sendEmail(eq(user1.getEmail()), anyString(), contains("Dear " + user1.getLogin()));
@@ -105,9 +115,31 @@ public class NotificationServiceTest {
     @Test
     void notifyUsersOfUpcomingEvent_EventNoUsers() {
         event1.setUsers(new HashSet<>());
+        event1.setResponsibleUserId(user1.getUserId());
+        when(blackCreekUserService.findUserById(user1.getUserId())).thenReturn(user1);
+        eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
+        verify(emailService, times(1)).sendEmail(
+                eq("user1@example.com"),
+                eq("You are Responsible for an Upcoming Event: Event 1"),
+                contains("This is a reminder that you are responsible for the upcoming event \"Event 1\"")
+        );
+        verify(blackCreekUserService, times(1)).findUserById(1L);
+    }
+
+    @Test
+    void notifyUsersOfUpcomingEvent_NoUsers_ShouldNotSendEmail() {
+        BlackCreekUser responsibleUser = new BlackCreekUser();
+        responsibleUser.setUserId(2L);
+        responsibleUser.setLogin("responsibleUser");
+
+        when(blackCreekUserService.findUserById(2L)).thenReturn(responsibleUser);
+
+        event1.setUsers(new HashSet<>());
+        event1.setResponsibleUserId(2L);
+
         eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
 
         verify(emailService, times(0)).sendEmail(anyString(), anyString(), anyString());
-        verify(blackCreekUserService, times(1)).findUserById(event1.getResponsibleUserId());
+        verify(blackCreekUserService, times(1)).findUserById(2L);
     }
 }

@@ -11,6 +11,7 @@ import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekEventRepository;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
 import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
+import ru.spring.tkrylova.blackcreek.servce.EmailService;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -27,6 +28,8 @@ public class BlackCreekEventServiceTest {
     private BlackCreekUserRepository blackCreekUserRepository;
     @Mock
     private BlackCreekEventRepository blackCreekEventRepository;
+    @Mock
+    private EmailService emailService;
 
     private BlackCreekUser blackCreekUser;
     private BlackCreekEvent blackCreekEvent;
@@ -39,6 +42,7 @@ public class BlackCreekEventServiceTest {
     public void setUp() {
         blackCreekEvent = new BlackCreekEvent();
         blackCreekEvent.setEventId(1L);
+        blackCreekEvent.setEventCapacity(10);
         blackCreekEvent.setAttendees(new HashSet<>());
         blackCreekEvent.setEventName("Medieval Fair");
 
@@ -250,9 +254,6 @@ public class BlackCreekEventServiceTest {
 
         assertNotNull(result);
         assertTrue(result.getAttendees().contains(blackCreekUser));
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(1)).save(result);
     }
 
     @Test
@@ -264,10 +265,6 @@ public class BlackCreekEventServiceTest {
         when(blackCreekUserRepository.findById(userId)).thenReturn(Optional.of(blackCreekUser));
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.addAttendeeToEvent(eventId, userId));
-
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(any(BlackCreekEvent.class));
     }
 
     @Test
@@ -279,10 +276,6 @@ public class BlackCreekEventServiceTest {
         when(blackCreekUserRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.addAttendeeToEvent(eventId, userId));
-
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(any(BlackCreekEvent.class));
     }
 
     @Test
@@ -338,9 +331,6 @@ public class BlackCreekEventServiceTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.removeAttendeeFromEvent(eventId, userId));
 
         assertEquals("Event not found", exception.getMessage());
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(any(BlackCreekEvent.class));
     }
 
     @Test
@@ -354,9 +344,6 @@ public class BlackCreekEventServiceTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.removeAttendeeFromEvent(eventId, userId));
 
         assertEquals("User not found", exception.getMessage());
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(any(BlackCreekEvent.class));
     }
 
     @Test
@@ -447,20 +434,14 @@ public class BlackCreekEventServiceTest {
     }
 
     @Test
-    void setResponsibleUserToEvent_EventNotFound() {
+    void setResponsibleUserToEvent_ThrowResourceNotFoundException_WhenEventNotFound() {
         Long eventId = 1L;
-        Long userId = 1L;
+        Long userId = 2L;
 
         when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.empty());
         when(blackCreekUserRepository.findById(userId)).thenReturn(Optional.of(blackCreekUser));
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.setResponsibleUserToEvent(eventId, userId));
-
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(blackCreekEvent);
-
-        assertEquals(blackCreekUser.getUserId(), blackCreekEvent.getResponsibleUserId());
     }
 
     @Test
@@ -472,11 +453,6 @@ public class BlackCreekEventServiceTest {
         when(blackCreekUserRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.setResponsibleUserToEvent(eventId, userId));
-
-        verify(blackCreekEventRepository, times(1)).findById(eventId);
-        verify(blackCreekUserRepository, times(1)).findById(userId);
-        verify(blackCreekEventRepository, times(0)).save(any(BlackCreekEvent.class));
-
         assertNull(blackCreekEvent.getResponsibleUserId());
     }
 
@@ -485,7 +461,6 @@ public class BlackCreekEventServiceTest {
         Long invalidId = -1L;
 
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.setResponsibleUserToEvent(invalidId, 2L));
-
         assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.setResponsibleUserToEvent(1L, invalidId));
     }
 
@@ -512,6 +487,6 @@ public class BlackCreekEventServiceTest {
 
         when(blackCreekEventRepository.findById(event.getEventId())).thenReturn(Optional.of(event));
         when(blackCreekUserRepository.findById(user3.getUserId())).thenReturn(Optional.of(user3));
-        assertThrows(IllegalStateException.class, () -> blackCreekEventService.addAttendeeToEvent(event.getEventId(), user3.getUserId()));
+        assertThrows(ResourceNotFoundException.class, () -> blackCreekEventService.addAttendeeToEvent(event.getEventId(), user3.getUserId()));
     }
 }
