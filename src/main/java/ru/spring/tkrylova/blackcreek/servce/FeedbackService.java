@@ -15,10 +15,16 @@ public class FeedbackService {
     }
 
     public List<Feedback> getFeedbackByEventId(Long eventId) {
+        if (eventId == null || eventId < 0) {
+            throw new IllegalArgumentException("Feedback is null or illegal!");
+        }
         return feedbackRepository.findByEventId(eventId);
     }
 
-    public void saveFeedback(Feedback feedback) {
-        feedbackRepository.save(feedback);
+    public Feedback saveFeedback(Feedback feedback) {
+        if (feedback == null) {
+            throw new IllegalArgumentException("Feedback is null!");
+        }
+        return feedbackRepository.save(feedback);
     }
 }

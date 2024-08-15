@@ -37,6 +37,9 @@ public class BookingService {
     }
 
     public Booking registerUserForEvent(Booking registration) {
+        if (registration == null) {
+            throw new IllegalArgumentException("Booking is null");
+        }
         return bookingsRepository.save(registration);
     }
 }

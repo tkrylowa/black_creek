@@ -13,6 +13,9 @@ public class EventPhotoService {
     }
 
     public EventPhoto save(EventPhoto eventPhoto) {
+        if (eventPhoto == null) {
+            throw new IllegalArgumentException("event photo is null!");
+        }
         return eventPhotoRepository.save(eventPhoto);
     }
 }

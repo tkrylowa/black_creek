@@ -40,6 +40,9 @@ public class BlackCreekUserService {
     }
 
     public BlackCreekUser updateUser(BlackCreekUser user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User must not be null");
+        }
         BlackCreekUser existingUser = blackCreekUserRepository.findById(user.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         existingUser.setLogin(user.getLogin());
         existingUser.setEmail(user.getEmail());
@@ -62,10 +65,16 @@ public class BlackCreekUserService {
     }
 
     public BlackCreekUser findUserByLogin(String login) {
+        if (login == null || login.isBlank() || login.isEmpty()) {
+            throw new IllegalArgumentException("Login must not be null, empty or blank");
+        }
         return blackCreekUserRepository.findByLogin(login).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     public boolean isLoginTaken(String login) {
+        if (login == null || login.isBlank() || login.isEmpty()) {
+            throw new IllegalArgumentException("Login must not be null, empty or blank");
+        }
         return blackCreekUserRepository.findByLogin(login).isPresent();
     }
 }

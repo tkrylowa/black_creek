@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class BookingTest {
     @Test
-    void bookingTest_NoArgsConstructor() {
+    void booking_NoArgsConstructor() {
         Booking booking = new Booking();
         assertNotNull(booking, "No-args constructor should create an instance of Booking");
     }
 
     @Test
-    void bookingTest_AllArgsConstructor() {
+    void booking_AllArgsConstructor() {
         LocalDateTime now = LocalDateTime.now();
         Booking booking = new Booking(1L, 2L, 3L, now, TimeSlot.MORNING, BookingStatus.CREATED, now, "user1", now, "user2");
 
@@ -41,7 +41,7 @@ public class BookingTest {
     }
 
     @Test
-    void bookingTest_GettersAndSetters() {
+    void booking_GettersAndSetters() {
         LocalDateTime now = LocalDateTime.now();
         Booking booking = new Booking();
         booking.setBookingId(1L);
@@ -69,7 +69,7 @@ public class BookingTest {
     }
 
     @Test
-    void testValidationConstraints() {
+    void booking_ValidationConstraints() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
@@ -95,7 +95,7 @@ public class BookingTest {
     }
 
     @Test
-    void bookingTest_TableName() {
+    void booking_TableName() {
         Class<Booking> entityClass = Booking.class;
         assertTrue(entityClass.isAnnotationPresent(Table.class), "Booking class should be annotated with @Table");
 

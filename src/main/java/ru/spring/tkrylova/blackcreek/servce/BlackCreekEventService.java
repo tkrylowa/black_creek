@@ -10,7 +10,6 @@ import ru.spring.tkrylova.blackcreek.entity.Feedback;
 import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekEventRepository;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekUserRepository;
-import ru.spring.tkrylova.blackcreek.repository.FeedbackRepository;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,17 +24,17 @@ public class BlackCreekEventService {
     private final BlackCreekEventRepository blackCreekEventRepository;
     private final BlackCreekUserRepository blackCreekUserRepository;
     private final EmailService emailService;
-    private final FeedbackRepository feedbackRepository;
+    private final FeedbackService feedbackService;
     private final EventPhotoService eventPhotoService;
 
     @Value("${file.upload-dir}")
     private String photoDir;
 
-    public BlackCreekEventService(BlackCreekEventRepository blackCreekEventRepository, BlackCreekUserRepository blackCreekUserRepository, EmailService emailService, FeedbackRepository feedbackRepository, EventPhotoService eventPhotoService) {
+    public BlackCreekEventService(BlackCreekEventRepository blackCreekEventRepository, BlackCreekUserRepository blackCreekUserRepository, EmailService emailService, FeedbackService feedbackService, EventPhotoService eventPhotoService) {
         this.blackCreekEventRepository = blackCreekEventRepository;
         this.blackCreekUserRepository = blackCreekUserRepository;
         this.emailService = emailService;
-        this.feedbackRepository = feedbackRepository;
+        this.feedbackService = feedbackService;
         this.eventPhotoService = eventPhotoService;
     }
 
@@ -182,11 +181,11 @@ public class BlackCreekEventService {
         feedback.setUser(user);
         feedback.setComments(comments);
         feedback.setRating(rating);
-        return feedbackRepository.save(feedback);
+        return feedbackService.saveFeedback(feedback);
     }
 
     public List<Feedback> getFeedbackForEvent(Long eventId) {
-        return feedbackRepository.findByEventId(eventId);
+        return feedbackService.getFeedbackByEventId(eventId);
     }
 
     public void addPhotoToEvent(Long eventId, MultipartFile file) throws IOException {

@@ -19,6 +19,9 @@ public class PlaceService {
     }
 
     public void savePlan(Place plan) {
+        if (plan == null) {
+            throw new IllegalArgumentException("Place is null!");
+        }
         placesRepository.save(plan);
     }
 }

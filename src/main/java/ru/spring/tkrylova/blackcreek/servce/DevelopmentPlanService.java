@@ -19,10 +19,16 @@ public class DevelopmentPlanService {
     }
 
     public DevelopmentPlan getDevelopmentPlanById(Long id) {
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("Plan id is null or illegal!");
+        }
         return developmentPlanRepository.findById(id).orElse(null);
     }
 
     public DevelopmentPlan savePlan(DevelopmentPlan plan) {
+        if (plan == null) {
+            throw new IllegalArgumentException("Feedback is null!");
+        }
         return developmentPlanRepository.save(plan);
     }
 }

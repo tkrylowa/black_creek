@@ -114,7 +114,7 @@ public class NotificationServiceTest {
 
     @Test
     void notifyUsersOfUpcomingEvent_EventNoUsers() {
-        event1.setUsers(new HashSet<>());
+        event1.setUsers(null);
         event1.setResponsibleUserId(user1.getUserId());
         when(blackCreekUserService.findUserById(user1.getUserId())).thenReturn(user1);
         eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
@@ -124,6 +124,33 @@ public class NotificationServiceTest {
                 contains("This is a reminder that you are responsible for the upcoming event \"Event 1\"")
         );
         verify(blackCreekUserService, times(1)).findUserById(1L);
+    }
+
+    @Test
+    void notifyUsersOfUpcomingEvent_EventNoResponsibleUsers() {
+        event1.setUsers(Set.of(user1));
+        event1.setResponsibleUserId(null);
+
+        eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
+        verify(emailService, times(1)).sendEmail(
+                eq("user1@example.com"),
+                eq("Upcoming Event: 2024-08-16"),
+                contains("""
+                        Dear user1,
+
+                        This is a reminder for the upcoming event "Event 1\"""")
+        );
+        verify(blackCreekUserService, times(0)).findUserById(user1.getUserId());
+    }
+
+    @Test
+    void notifyUsersOfUpcomingEvent_EventNoResponsibleUsersNoUsers() {
+        event1.setUsers(new HashSet<>());
+        event1.setResponsibleUserId(null);
+
+        eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
+
+        verify(emailService, times(0)).sendEmail(anyString(), anyString(), anyString());
     }
 
     @Test
