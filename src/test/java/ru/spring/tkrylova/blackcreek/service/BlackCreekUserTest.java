@@ -111,8 +111,13 @@ public class BlackCreekUserTest {
 
     @Test
     void findUserById_NotFound() {
-        when(blackCreekUserRepository.findById(-1L)).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> userService.findUserById(-1L));
+        when(blackCreekUserRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                userService.findUserById(1L)
+        );
+        assertEquals("User not found", exception.getMessage(), "Exception message should be 'User not found'");
+        verify(blackCreekUserRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -120,6 +125,15 @@ public class BlackCreekUserTest {
         Long invalidId = -1L;
         Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.findUserById(invalidId));
         assertEquals("ID must be a positive number", exception.getMessage());
+    }
+
+    @Test
+    void findUserById_ShouldThrowException_WhenIdIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.findUserById(null)
+        );
+        assertEquals("ID must be a positive number", exception.getMessage(), "Exception message should be 'ID must be a positive number'");
+        verify(blackCreekUserRepository, never()).findById(anyLong());
     }
 
     @Test
@@ -137,18 +151,185 @@ public class BlackCreekUserTest {
         when(blackCreekUserRepository.findByLogin(invalidLogin)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(invalidLogin));
         assertEquals("User not found", exception.getMessage());
+        verify(blackCreekUserRepository, times(1)).findByLogin(invalidLogin);
     }
 
     @Test
-    void findByLogin_NullLogin() {
-        Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(null));
-
-        assertEquals("User not found", exception.getMessage());
+    void findByLogin_ShouldThrowException_WhenNullLogin() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.findUserByLogin(null));
+        assertEquals("Login must not be null, empty or blank", exception.getMessage());
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
     }
 
     @Test
-    void findByLogin_EmptyLogin() {
-        Exception exception = assertThrows(ResourceNotFoundException.class, () -> userService.findUserByLogin(""));
-        assertEquals("User not found", exception.getMessage());
+    void findByLogin_ShouldThrowException_WhenEmptyLogin() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.findUserByLogin(""));
+        assertEquals("Login must not be null, empty or blank", exception.getMessage());
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
+    }
+
+    @Test
+    void findUserByLogin_ShouldThrowException_WhenLoginIsBlank() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.findUserByLogin("   ")
+        );
+        assertEquals("Login must not be null, empty or blank", exception.getMessage(), "Exception message should be 'Login must not be null, empty or blank'");
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
+    }
+
+    @Test
+    void updateUser_ShouldUpdateAndReturnUser_WhenUserExists() {
+        Long userId = 1L;
+        String login = "updatedLogin";
+        String email = "updatedEmail@example.com";
+        String password = "NewPassword123!";
+        String encodedPassword = "EncodedPassword123!";
+        UserRole userRole = new UserRole();
+        userRole.setRoleName("ROLE_ADMIN");
+
+        BlackCreekUser userToUpdate = new BlackCreekUser();
+        userToUpdate.setUserId(userId);
+        userToUpdate.setLogin(login);
+        userToUpdate.setEmail(email);
+        userToUpdate.setPassword(password);
+        userToUpdate.setUserRole(userRole);
+
+        BlackCreekUser existingUser = new BlackCreekUser();
+        existingUser.setUserId(userId);
+        existingUser.setLogin("oldLogin");
+        existingUser.setEmail("oldEmail@example.com");
+        existingUser.setPassword("OldPassword123!");
+        existingUser.setUserRole(new UserRole());
+
+        when(blackCreekUserRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
+        when(blackCreekUserRepository.save(existingUser)).thenReturn(existingUser);
+
+        BlackCreekUser updatedUser = userService.updateUser(userToUpdate);
+
+        assertNotNull(updatedUser, "Updated user should not be null");
+        assertEquals(login, updatedUser.getLogin(), "Login should be updated");
+        assertEquals(email, updatedUser.getEmail(), "Email should be updated");
+        assertEquals(encodedPassword, updatedUser.getPassword(), "Password should be encoded and updated");
+        assertEquals(userRole, updatedUser.getUserRole(), "User role should be updated");
+
+        verify(blackCreekUserRepository, times(1)).findById(userId);
+        verify(passwordEncoder, times(1)).encode(password);
+        verify(blackCreekUserRepository, times(1)).save(existingUser);
+    }
+
+    @Test
+    void updateUser_ShouldThrowIllegalArgumentException_WhenUserIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUser(null)
+        );
+        assertEquals("User must not be null", exception.getMessage(), "Exception message should be 'User must not be null'");
+        verify(blackCreekUserRepository, never()).findById(anyLong());
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(blackCreekUserRepository, never()).save(any(BlackCreekUser.class));
+    }
+
+    @Test
+    void updateUser_ShouldUpdateAndReturnUser_WhenUserExistsAndPasswordIsEmpty() {
+        BlackCreekUser existingUser = new BlackCreekUser();
+        existingUser.setUserId(1L);
+        existingUser.setLogin("oldLogin");
+        existingUser.setEmail("old@example.com");
+        existingUser.setPassword("oldPassword");
+        UserRole oldRole = new UserRole();
+        oldRole.setRoleName("ROLE_OLD");
+        existingUser.setUserRole(oldRole);
+
+        BlackCreekUser updatedUser = new BlackCreekUser();
+        updatedUser.setUserId(1L);
+        updatedUser.setLogin("newLogin");
+        updatedUser.setEmail("new@example.com");
+        updatedUser.setPassword("");
+        UserRole newRole = new UserRole();
+        newRole.setRoleName("ROLE_NEW");
+        updatedUser.setUserRole(newRole);
+
+        when(blackCreekUserRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(blackCreekUserRepository.save(any(BlackCreekUser.class))).thenReturn(existingUser);
+
+        BlackCreekUser result = userService.updateUser(updatedUser);
+        assertNotNull(result, "The result should not be null");
+        assertEquals("newLogin", result.getLogin(), "The login should be updated");
+        assertEquals("new@example.com", result.getEmail(), "The email should be updated");
+        assertEquals("oldPassword", result.getPassword(), "The password should not be changed if it's empty");
+        assertEquals("ROLE_NEW", result.getUserRole().getRoleName(), "The role should be updated");
+        verify(blackCreekUserRepository, times(1)).findById(1L);
+        verify(passwordEncoder, never()).encode(anyString());
+        verify(blackCreekUserRepository, times(1)).save(existingUser);
+    }
+
+    @Test
+    void updateUser_ShouldThrowException_WhenUserIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUser(null)
+        );
+        assertEquals("User must not be null", exception.getMessage(), "Exception message should be 'User must not be null'");
+        verify(blackCreekUserRepository, never()).findById(anyLong());
+        verify(blackCreekUserRepository, never()).save(any());
+    }
+
+    @Test
+    void updateUser_ShouldThrowException_WhenUserDoesNotExist() {
+        BlackCreekUser user = new BlackCreekUser();
+        user.setUserId(1L);
+
+        when(blackCreekUserRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                userService.updateUser(user)
+        );
+        assertEquals("User not found", exception.getMessage(), "Exception message should be 'User not found'");
+        verify(blackCreekUserRepository, times(1)).findById(1L);
+        verify(blackCreekUserRepository, never()).save(any(BlackCreekUser.class));
+    }
+
+    @Test
+    void isLoginTaken_ShouldReturnTrue_WhenLoginIsTaken() {
+        when(blackCreekUserRepository.findByLogin("takenLogin")).thenReturn(Optional.of(new BlackCreekUser()));
+
+        boolean result = userService.isLoginTaken("takenLogin");
+
+        assertTrue(result, "The login should be taken, so the result should be true");
+        verify(blackCreekUserRepository, times(1)).findByLogin("takenLogin");
+    }
+
+    @Test
+    void isLoginTaken_ShouldReturnFalse_WhenLoginIsNotTaken() {
+        when(blackCreekUserRepository.findByLogin("freeLogin")).thenReturn(Optional.empty());
+        boolean result = userService.isLoginTaken("freeLogin");
+        assertFalse(result, "The login should not be taken, so the result should be false");
+        verify(blackCreekUserRepository, times(1)).findByLogin("freeLogin");
+    }
+
+    @Test
+    void isLoginTaken_ShouldThrowException_WhenLoginIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.isLoginTaken(null)
+        );
+        assertEquals("Login must not be null, empty or blank", exception.getMessage(), "Exception message should be 'Login must not be null, empty or blank'");
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
+    }
+
+    @Test
+    void isLoginTaken_ShouldThrowException_WhenLoginIsEmpty() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.isLoginTaken("")
+        );
+        assertEquals("Login must not be null, empty or blank", exception.getMessage(), "Exception message should be 'Login must not be null, empty or blank'");
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
+    }
+
+    @Test
+    void isLoginTaken_ShouldThrowException_WhenLoginIsBlank() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.isLoginTaken("   ")
+        );
+        assertEquals("Login must not be null, empty or blank", exception.getMessage(), "Exception message should be 'Login must not be null, empty or blank'");
+        verify(blackCreekUserRepository, never()).findByLogin(anyString());
     }
 }

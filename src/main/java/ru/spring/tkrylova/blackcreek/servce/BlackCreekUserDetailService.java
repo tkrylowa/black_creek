@@ -25,9 +25,6 @@ public class BlackCreekUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        if (login == null || login.isBlank() || login.isEmpty()) {
-            throw new IllegalArgumentException("Login must not be null, empty or blank");
-        }
         BlackCreekUser blackCreekUser = getUserByLogin(login).orElseThrow(() -> {
             log.error("User not found");
             return new UsernameNotFoundException("User not found");
@@ -37,6 +34,9 @@ public class BlackCreekUserDetailService implements UserDetailsService {
     }
 
     public Optional<BlackCreekUser> getUserByLogin(String login) {
+        if (login == null || login.isBlank() || login.isEmpty()) {
+            throw new IllegalArgumentException("Login must not be null, empty or blank");
+        }
         return blackCreekUserRepository.findByLogin(login);
     }
 }

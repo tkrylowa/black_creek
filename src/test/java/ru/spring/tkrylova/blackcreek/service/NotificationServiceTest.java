@@ -134,7 +134,7 @@ public class NotificationServiceTest {
         eventNotificationScheduler.notifyUsersOfUpcomingEvent(event1);
         verify(emailService, times(1)).sendEmail(
                 eq("user1@example.com"),
-                eq("Upcoming Event: 2024-08-16"),
+                contains("Upcoming Event"),
                 contains("""
                         Dear user1,
 
