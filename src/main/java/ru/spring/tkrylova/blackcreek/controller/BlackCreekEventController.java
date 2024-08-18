@@ -50,9 +50,8 @@ public class BlackCreekEventController {
     }
 
     @PostMapping("/add")
-    public String createEvent(@ModelAttribute("event")BlackCreekEvent event, Model model) {
-//        model.addAttribute("event", event);
-        BlackCreekEvent savedEvent = blackCreekEventService.saveEvent(event);
+    public String createEvent(@ModelAttribute("event") BlackCreekEvent event, Model model) {
+        BlackCreekEvent savedEvent = blackCreekEventService.createEvent(event);
         log.info("New event with id {} was successfully created", savedEvent.getEventId());
         model.addAttribute("reloadScript", "<script>setTimeout(function(){ window.location.reload(); }, 1000);</script>");
         return "redirect:/events";

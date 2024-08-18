@@ -1,5 +1,7 @@
 package ru.spring.tkrylova.blackcreek.servce;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,8 @@ public class BlackCreekEventService {
     private final FeedbackService feedbackService;
     private final EventPhotoService eventPhotoService;
 
+    @Getter
+    @Setter
     @Value("${file.upload-dir}")
     private String photoDir;
 

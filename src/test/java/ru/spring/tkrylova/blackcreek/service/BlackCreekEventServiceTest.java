@@ -4,17 +4,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekEvent;
 import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
+import ru.spring.tkrylova.blackcreek.entity.EventPhoto;
 import ru.spring.tkrylova.blackcreek.entity.Feedback;
 import ru.spring.tkrylova.blackcreek.execption.ResourceNotFoundException;
 import ru.spring.tkrylova.blackcreek.repository.BlackCreekEventRepository;
-import ru.spring.tkrylova.blackcreek.servce.BlackCreekEventService;
-import ru.spring.tkrylova.blackcreek.servce.BlackCreekUserService;
-import ru.spring.tkrylova.blackcreek.servce.EventNotificationService;
-import ru.spring.tkrylova.blackcreek.servce.FeedbackService;
+import ru.spring.tkrylova.blackcreek.servce.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class BlackCreekEventServiceTest {
     @InjectMocks
     private BlackCreekEventService blackCreekEventService;
@@ -34,6 +37,8 @@ public class BlackCreekEventServiceTest {
     private EventNotificationService eventNotificationService;
     @Mock
     private FeedbackService feedbackService;
+    @Mock
+    private EventPhotoService eventPhotoService;
 
     private BlackCreekUser blackCreekUser;
     private BlackCreekEvent blackCreekEvent;
@@ -41,6 +46,9 @@ public class BlackCreekEventServiceTest {
 
     private LocalDate startDate;
     private LocalDate endDate;
+
+    @Value("${file.upload-dir}")
+    private String photoDir;
 
     @BeforeEach
     public void setUp() {
@@ -631,27 +639,102 @@ public class BlackCreekEventServiceTest {
     }
 
     @Test
-    void addFeedback_ThrowsResourceNotFoundException_NotPositiveId() {
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> blackCreekEventService.addFeedback(-1L, 1L, "some comment", 1)
-        );
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> blackCreekEventService.addFeedback(1L, -1L, "some comment", 1)
-        );
+    void addFeedback_ShouldSaveFeedback() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        String comments = "Great event!";
+        int rating = 5;
+
+        BlackCreekEvent event = new BlackCreekEvent();
+        BlackCreekUser user = new BlackCreekUser();
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(blackCreekUserService.findUserById(userId)).thenReturn(user);
+        when(feedbackService.saveFeedback(any(Feedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Feedback feedback = blackCreekEventService.addFeedback(eventId, userId, comments, rating);
+
+        assertNotNull(feedback);
+        assertEquals(event, feedback.getEvent());
+        assertEquals(user, feedback.getUser());
+        assertEquals(comments, feedback.getComments());
+        assertEquals(rating, feedback.getRating());
+
+        verify(blackCreekEventRepository).findById(eventId);
+        verify(blackCreekUserService).findUserById(userId);
+        verify(feedbackService).saveFeedback(feedback);
     }
 
     @Test
-    void addFeedback_ThrowsResourceNotFoundException_IdNull() {
-        assertThrows(
+    void addFeedback_ThrowsResourceNotFoundException_EventNotPositiveId() {
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> blackCreekEventService.addFeedback(-1L, 1L, "some comment", 1)
+        );
+        assertThat(exception.getMessage()).isEqualTo("Event id is invalid");
+    }
+
+    @Test
+    void addFeedback_ThrowsResourceNotFoundException_UserNotPositiveId() {
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> blackCreekEventService.addFeedback(1L, -1L, "some comment", 1)
+        );
+        assertThat(exception.getMessage()).isEqualTo("User id is invalid");
+    }
+
+    @Test
+    void addFeedback_ThrowsResourceNotFoundException_EventIdNull() {
+        ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
                 () -> blackCreekEventService.addFeedback(null, 1L, "some comment", 1)
         );
-        assertThrows(
+        assertThat(exception.getMessage()).isEqualTo("Event id is null");
+    }
+
+    @Test
+    void addFeedback_ThrowsResourceNotFoundException_UserIdNull() {
+        ResourceNotFoundException exception = assertThrows(
                 ResourceNotFoundException.class,
                 () -> blackCreekEventService.addFeedback(1L, null, "some comment", 1)
         );
+        assertThat(exception.getMessage()).isEqualTo("User id is null");
+    }
+
+    @Test
+    void addFeedback_ShouldThrowExceptionForEventNotFound() {
+        Long eventId = 1L;
+        Long userId = 1L;
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.addFeedback(eventId, userId, "comments", 5)
+        );
+        assertEquals("Event not found", exception.getMessage());
+
+        verify(blackCreekEventRepository).findById(eventId);
+        verify(blackCreekUserService, never()).findUserById(anyLong());
+        verify(feedbackService, never()).saveFeedback(any(Feedback.class));
+    }
+
+    @Test
+    void addFeedback_ShouldThrowExceptionForUserNotFound() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        BlackCreekEvent event = new BlackCreekEvent();
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(blackCreekUserService.findUserById(userId)).thenThrow(new ResourceNotFoundException("User not found"));
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.addFeedback(eventId, userId, "comments", 5)
+        );
+        assertEquals("User not found", exception.getMessage());
+
+        verify(blackCreekEventRepository).findById(eventId);
+        verify(blackCreekUserService).findUserById(userId);
+        verify(feedbackService, never()).saveFeedback(any(Feedback.class));
     }
 
     @Test
@@ -892,7 +975,7 @@ public class BlackCreekEventServiceTest {
     }
 
     @Test
-    void getFeedbackForEvent_ShouldReturnEmptyListWhenNoFeedback() {
+    void getFeedbackForEvent_ShouldReturnEmptyList_WhenNoFeedback() {
         Long eventId = 1L;
         when(feedbackService.getFeedbackByEventId(eventId)).thenReturn(Collections.emptyList());
 
@@ -900,5 +983,139 @@ public class BlackCreekEventServiceTest {
 
         assertTrue(actualFeedback.isEmpty());
         verify(feedbackService).getFeedbackByEventId(eventId);
+    }
+
+    @Test
+    void updateEvent_ShouldUpdateEvent_Successfully() {
+        Long eventId = 1L;
+        BlackCreekEvent existingEvent = new BlackCreekEvent();
+        existingEvent.setEventName("Old name");
+        BlackCreekEvent updatedEvent = new BlackCreekEvent();
+        updatedEvent.setEventName("New Event Name");
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.of(existingEvent));
+
+        blackCreekEventService.updateEvent(eventId, updatedEvent);
+
+        assertEquals("New Event Name", existingEvent.getEventName());
+        verify(blackCreekEventRepository).save(existingEvent);
+    }
+
+    @Test
+    void updateEvent_ShouldThrowException_WhenNullEventId() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.updateEvent(null, new BlackCreekEvent())
+        );
+        assertEquals("Event id is null", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void updateEvent_ShouldThrowException_WhenNegativeEventId() {
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.updateEvent(-1L, new BlackCreekEvent())
+        );
+        assertEquals("Event id is invalid", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void updateEvent_ShouldThrowException_WhenNullUpdatedEvent() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                blackCreekEventService.updateEvent(1L, null)
+        );
+        assertEquals("Event must not be null", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void updateEvent_ShouldThrowException_WhenEventNotFound() {
+        Long eventId = 1L;
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.updateEvent(eventId, new BlackCreekEvent())
+        );
+        assertEquals("Event not found", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void addPhotoToEvent_ShouldAddPhoto_Successfully() throws IOException {
+        Long eventId = 1L;
+        BlackCreekEvent event = new BlackCreekEvent();
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        blackCreekEventService.setPhotoDir(photoDir);
+        blackCreekEventService.addPhotoToEvent(eventId, file);
+
+        assertEquals(1, event.getEventPhotos().size());
+        verify(blackCreekEventRepository).save(event);
+        verify(eventPhotoService).save(any(EventPhoto.class));
+    }
+
+    @Test
+    public void testUploadDir() {
+        assertNotNull(photoDir);
+    }
+
+    @Test
+    void addPhotoToEvent_ShouldAddPhoto_WhenNullEventId() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.addPhotoToEvent(null, file)
+        );
+        assertEquals("Event id is null", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void addPhotoToEvent_ShouldAddPhoto_WhenNegativeEventId() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.addPhotoToEvent(-1L, file)
+        );
+        assertEquals("Event id is invalid", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+    }
+
+    @Test
+    void addPhotoToEvent_ShouldThrowException_WhenEmptyFile() {
+        Long eventId = 1L;
+        MockMultipartFile emptyFile = new MockMultipartFile("file", "empty.jpg", "image/jpeg", new byte[0]);
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.of(blackCreekEvent));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                blackCreekEventService.addPhotoToEvent(eventId, emptyFile)
+        );
+        assertEquals("Cannot upload empty file", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+        verify(eventPhotoService, never()).save(any());
+    }
+
+    @Test
+    void addPhotoToEvent_ShouldThrowException_WhenEventNotFound() {
+        Long eventId = 1L;
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
+
+        when(blackCreekEventRepository.findById(eventId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                blackCreekEventService.addPhotoToEvent(eventId, file)
+        );
+        assertEquals("Event not found", exception.getMessage());
+        verify(blackCreekEventRepository, never()).save(any());
+        verify(eventPhotoService, never()).save(any());
+    }
+
+    @Test
+    public void uploadDirIsNotNull() {
+        assertNotNull(photoDir, "The file.upload-dir property should not be null");
+        blackCreekEventService.setPhotoDir(photoDir);
+        assertNotNull(blackCreekEventService.getPhotoDir(), "he photodDir should match the provided path");
     }
 }
