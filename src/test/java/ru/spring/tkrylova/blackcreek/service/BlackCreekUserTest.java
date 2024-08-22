@@ -332,4 +332,44 @@ public class BlackCreekUserTest {
         assertEquals("Login must not be null, empty or blank", exception.getMessage(), "Exception message should be 'Login must not be null, empty or blank'");
         verify(blackCreekUserRepository, never()).findByLogin(anyString());
     }
+
+    @Test
+    void isEmailTaken_NullEmail_ShouldThrowException() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> userService.isEmailTaken(null));
+        assertEquals("Email must not be null, empty or blank", thrown.getMessage());
+    }
+
+    @Test
+    void isEmailTaken_EmptyEmail_ShouldThrowException() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> userService.isEmailTaken(""));
+        assertEquals("Email must not be null, empty or blank", thrown.getMessage());
+    }
+
+    @Test
+    void isEmailTaken_BlankEmail_ShouldThrowException() {
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> userService.isEmailTaken("   "));
+        assertEquals("Email must not be null, empty or blank", thrown.getMessage());
+    }
+
+    @Test
+    void isEmailTaken_EmailExists_ShouldReturnTrue() {
+        String email = "test@example.com";
+        when(blackCreekUserRepository.existsByEmail(email)).thenReturn(true);
+
+        boolean result = userService.isEmailTaken(email);
+
+        assertTrue(result);
+        verify(blackCreekUserRepository, times(1)).existsByEmail(email);
+    }
+
+    @Test
+    void isEmailTaken_EmailDoesNotExist_ShouldReturnFalse() {
+        String email = "test@example.com";
+        when(blackCreekUserRepository.existsByEmail(email)).thenReturn(false);
+
+        boolean result = userService.isEmailTaken(email);
+
+        assertFalse(result);
+        verify(blackCreekUserRepository, times(1)).existsByEmail(email);
+    }
 }

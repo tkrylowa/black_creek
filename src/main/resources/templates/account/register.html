@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
     <link th:href="@{/css/style.css}" rel="stylesheet">
@@ -12,6 +12,9 @@
         <div class="register-container">
             <div class="register-box">
                 <h2>Register</h2>
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}">Error message</p>
+                </div>
                 <form th:action="@{/register}" th:object="${user}" method="post">
                     <div class="input-group">
                         <label for="login">Login:</label>
@@ -44,12 +47,6 @@
                     </div>
                     <div class="input-group">
                         <button type="submit">Register</button>
-                    </div>
-                    <div th:if="${error}" class="error">
-                        <p th:text="${error}">Error message</p>
-                    </div>
-                    <div th:if="${message}" class="message">
-                        <p th:text="${message}">Success message</p>
                     </div>
                 </form>
                 <div class="login-link">

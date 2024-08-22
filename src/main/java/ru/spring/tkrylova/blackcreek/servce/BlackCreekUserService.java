@@ -75,6 +75,13 @@ public class BlackCreekUserService {
         if (login == null || login.isBlank() || login.isEmpty()) {
             throw new IllegalArgumentException("Login must not be null, empty or blank");
         }
-        return blackCreekUserRepository.findByLogin(login).isPresent();
+        return blackCreekUserRepository.existsByLogin(login);
+    }
+
+    public boolean isEmailTaken(String email) {
+        if (email == null || email.isBlank() || email.isEmpty()) {
+            throw new IllegalArgumentException("Email must not be null, empty or blank");
+        }
+        return blackCreekUserRepository.existsByEmail(email);
     }
 }

@@ -29,22 +29,26 @@ public class RegistrationController {
 
     @PostMapping
     public String registerUser(@Valid BlackCreekUser user, BindingResult result, Model model) {
-        model.addAttribute("user", new BlackCreekUser());
+        model.addAttribute("user", user);
         if (blackCreekUserService.isLoginTaken(user.getLogin())) {
             model.addAttribute("error", "Login is already taken.");
             return "account/register";
         }
-        if (!user.getPassword().equals(user.getConfirmPassword())) {
+        if (blackCreekUserService.isEmailTaken(user.getEmail())) {
+            model.addAttribute("error", "Email is already taken.");
+            return "account/register";
+        }
+        if (user.getPassword() == null || user.getConfirmPassword() == null || !user.getPassword().equals(user.getConfirmPassword())) {
             model.addAttribute("error", "Passwords do not match.");
             return "account/register";
         }
         if (result.hasErrors()) {
             log.error("Error occurred! {}", result.getAllErrors());
+            model.addAttribute("error", result.getFieldErrors());
             return "account/register";
         }
         BlackCreekUser savedUser = blackCreekUserService.saveUser(user);
         log.info("New user with login {} was successfully created", savedUser.getLogin());
-        model.addAttribute("message", "Registration successful.");
         return "redirect:/login";
     }
 }
