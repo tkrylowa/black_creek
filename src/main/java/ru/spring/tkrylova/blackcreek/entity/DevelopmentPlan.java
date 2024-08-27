@@ -20,13 +20,13 @@ public class DevelopmentPlan {
     @Column(name = "development_plan_id")
     private Long developmentPlanId;
 
-    @NotNull
-    @Size(min = 5, max = 25)
+    @NotNull(message = "Development Plan Name is required")
+    @Size(min = 5, max = 25, message = "Development Plan Name must be between 5 and 25 characters")
     @Column(name = "development_plan_name",
             nullable = false)
     private String developmentPlanName;
 
-    @Size(min = 10)
+    @Size(min = 10, message = "Development Plan Description must be at least 10 characters long")
     @Column(name = "development_plan_description")
     private String developmentPlanDescription;
 

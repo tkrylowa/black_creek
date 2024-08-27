@@ -39,11 +39,13 @@
                     <div class="input-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" required th:field="*{password}">
+                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                     </div>
                     <div class="input-group">
                         <label for="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" required
                                th:field="*{confirmPassword}">
+                        <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
                     </div>
                     <div class="input-group">
                         <button type="submit">Register</button>

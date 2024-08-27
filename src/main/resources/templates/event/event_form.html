@@ -10,12 +10,18 @@
     <main class="main-content">
         <div class="container">
             <h1 class="my-4">Add Event</h1>
+            <div class="error-summary" th:if="${error != null}">
+                <ul>
+                    <li th:each="err : ${error}" th:text="${err.defaultMessage}"></li>
+                </ul>
+            </div>
             <form th:action="@{/events/add}" th:object="${event}" method="post" class="form">
                 <div class="form-group">
-                    <label>Name</label>
-                    <label>
-                        <input type="text" th:field="*{eventName}" class="form-control"/>
-                    </label>
+                    <label for="eventName"> Name</label>
+                    <input type="text" id="eventName" th:field="*{eventName}" class="form-control"/>
+                    <div class="error" th:if="${#fields.hasErrors('eventName')}">
+                        <span th:each="err : ${#fields.errors('eventName')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -24,46 +30,60 @@
                         <option th:each="type : ${eventTypes}" th:value="${type.id}" th:text="${type.name}">Event Type
                         </option>
                     </select>
+                    <div class="error" th:if="${#fields.hasErrors('eventTypes')}">
+                        <span th:each="err : ${#fields.errors('eventTypes')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Description</label>
-                    <label>
-                        <input type="text" th:field="*{eventDescription}" class="form-control"/>
-                    </label>
+                    <label for="eventDescription"></label>
+                    <input type="text" id="eventDescription" th:field="*{eventDescription}" class="form-control"/>
+                    <div class="error" th:if="${#fields.hasErrors('eventDescription')}">
+                        <span th:each="err : ${#fields.errors('eventDescription')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Start date</label>
-                    <label>
-                        <input type="date" th:field="*{eventStartDate}" class="form-control"/>
-                    </label>
+                    <label for="eventStartDate">Start date</label>
+                    <input type="date" id="eventStartDate" th:field="*{eventStartDate}" class="form-control"/>
+                    <div class="error" th:if="${#fields.hasErrors('eventStartDate')}">
+                        <span th:each="err : ${#fields.errors('eventStartDate')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>End date</label>
-                    <label>
-                        <input type="date" th:field="*{eventEndDate}" class="form-control"/>
-                    </label>
+                    <label for="eventEndDate">End date</label>
+                    <input type="date" ID="eventEndDate" th:field="*{eventEndDate}" class="form-control"/>
+                    <div class="error" th:if="${#fields.hasErrors('eventEndDate')}">
+                        <span th:each="err : ${#fields.errors('eventEndDate')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Event capacity (how mane people)</label>
-                    <label>
-                        <input type="number" th:field="*{eventCapacity}" class="form-control" value="3"/>
-                    </label>
+                    <label for="eventCapacity">Event capacity (how mane people)</label>
+                    <input type="number" id="eventCapacity" th:field="*{eventCapacity}" class="form-control" value="3"/>
+                    <div class="error" th:if="${#fields.hasErrors('eventCapacity')}">
+                        <span th:each="err : ${#fields.errors('eventCapacity')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="cost">Cost</label>
                     <input type="number" step="0.01" id="cost" th:field="*{cost}" class="form-control" min="0">
+                    <div class="error" th:if="${#fields.hasErrors('cost')}">
+                        <span th:each="err : ${#fields.errors('cost')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="responsibleUserId">Responsible User</label>
                     <select id="responsibleUserId" th:field="*{responsibleUserId}" class="form-control">
-                        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.login}">Select User</option>
+                        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.login}">Select User
+                        </option>
                     </select>
+                    <div class="error" th:if="${#fields.hasErrors('responsibleUserId')}">
+                        <span th:each="err : ${#fields.errors('responsibleUserId')}" th:text="${err}"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">

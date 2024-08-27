@@ -743,6 +743,26 @@ img {
     background: #45a049;
 }
 
+.error-summary ul {
+    color: red;
+    list-style-type: none;
+    padding: 0;
+}
+
+.error-summary li {
+    margin-bottom: 5px;
+}
+
+.success-message {
+    color: green;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    border: 2px solid green;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #e6ffe6;
+}
+
 @media (max-width: 600px) {
     .event-container {
         padding: 15px;

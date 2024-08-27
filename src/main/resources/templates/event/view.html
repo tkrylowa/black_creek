@@ -9,10 +9,10 @@
 <div class="container">
     <div th:replace="~{./fragments.html :: header}"></div>
     <main class="main-content">
-        <div th:if="${successMessage}" class="alert alert-success">
+        <div th:if="${successMessage}">
             <p th:text="${successMessage}"></p>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger">
+        <div th:if="${errorMessage}">
             <p th:text="${errorMessage}"></p>
         </div>
 
@@ -166,10 +166,10 @@
                 <p th:if="${event.eventPhotos.size() == 0}">No feedbacks yet</p>
             </div>
 
-            <div th:if="${successMessage}" class="alert alert-success">
+            <div th:if="${successMessage}" class="success-message">
                 <p th:text="${successMessage}"></p>
             </div>
-            <div th:if="${errorMessage}" class="alert alert-danger">
+            <div th:if="${errorMessage}">
                 <p th:text="${errorMessage}"></p>
             </div>
 

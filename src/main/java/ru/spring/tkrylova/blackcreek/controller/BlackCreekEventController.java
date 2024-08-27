@@ -1,8 +1,10 @@
 package ru.spring.tkrylova.blackcreek.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,7 +43,7 @@ public class BlackCreekEventController {
         return "event/events";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/add")
     public String showEventForm(Model model) {
         BlackCreekEvent event = new BlackCreekEvent();
         event.setFree(true);
@@ -50,7 +52,12 @@ public class BlackCreekEventController {
     }
 
     @PostMapping("/add")
-    public String createEvent(@ModelAttribute("event") BlackCreekEvent event, Model model) {
+    public String createEvent(@ModelAttribute("event") @Valid BlackCreekEvent event, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            log.error("Error occurred! {}", result.getAllErrors());
+            model.addAttribute("error", result.getFieldErrors());
+            return "event/event_form";
+        }
         BlackCreekEvent savedEvent = blackCreekEventService.createEvent(event);
         log.info("New event with id {} was successfully created", savedEvent.getEventId());
         model.addAttribute("reloadScript", "<script>setTimeout(function(){ window.location.reload(); }, 1000);</script>");

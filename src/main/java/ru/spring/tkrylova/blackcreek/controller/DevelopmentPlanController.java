@@ -1,12 +1,13 @@
 package ru.spring.tkrylova.blackcreek.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.spring.tkrylova.blackcreek.entity.BlackCreekUser;
 import ru.spring.tkrylova.blackcreek.entity.DevelopmentPlan;
 import ru.spring.tkrylova.blackcreek.servce.DevelopmentPlanService;
 
@@ -30,15 +31,20 @@ public class DevelopmentPlanController {
         return "development_plans/development_plan";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/add")
     public String showDevelopmentPlanForm(Model model) {
         model.addAttribute("developmentPlan", new DevelopmentPlan());
         return "development_plans/development_plan_form";
     }
 
     @PostMapping("/add")
-    public String createDevelopmentPlan(DevelopmentPlan developmentPlan, Model model) {
-        model.addAttribute("developmentPlan", new BlackCreekUser());
+    public String createDevelopmentPlan(@Valid DevelopmentPlan developmentPlan, BindingResult result, Model model) {
+        model.addAttribute("developmentPlan", developmentPlan);
+        if (result.hasErrors()) {
+            log.error("Error occurred! {}", result.getAllErrors());
+            model.addAttribute("error", result.getFieldErrors());
+            return "development_plans/development_plan_form";
+        }
         DevelopmentPlan newDevelopmentPlan = developmentPlanService.savePlan(developmentPlan);
         log.info("New development plan with id {} was successfully created", newDevelopmentPlan.getDevelopmentPlanId());
         return "redirect:/development_plans";
